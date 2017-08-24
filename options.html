@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <label for="token">
+            <h3>
+                Access token
+                <small>
+                    <a
+                        href="https://github.com/settings/tokens/new"
+                        target="_blank" >
+
+                        Get new token
+                    </a>
+                </small>
+            </h3>
+            <input type="text" class="full-width" type="text" id="token" />
+        </label>
+        <h3>Follow users</h3>
+        <div>
+            <ul id="userList"></ul>
+            <label for="newUser">
+                <span>Add user (user login)</span>
+                <input type="text" id="newUser" />
+            </label>
+            <button type="button" id="addUser">Add user</button>
+        </div>
+        <h3>Follow users</h3>
+        <div>
+            <ul id="repoList"></ul>
+            <label for="newRepo">
+                <span>Add repo (repo name)</span>
+                <input type="text" id="newRepo" />
+            </label>
+            <button type="button" id="addRepo" >Add repository</button>
+        </div>
+        <script type="text/javascript" src="options.js"></script>
+    </body>
+</html>
