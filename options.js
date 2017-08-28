@@ -1,7 +1,9 @@
 
 const getRemoveButton = onRemove =>
 {
-    let removeButton = document.createElement( 'button' );
+    let removeButton = document.createElement( 'span' );
+    removeButton.classList.add('clickable');
+    removeButton.classList.add('m-l-base');
     let onRmButtonClick = event =>
     {
         removeButton.removeEventListener( 'click', onRmButtonClick );
@@ -9,10 +11,25 @@ const getRemoveButton = onRemove =>
     };
 
     removeButton.addEventListener( 'click', onRmButtonClick );
-    removeButton.appendChild( document.createTextNode( 'remove' ) );
+    removeButton.appendChild( document.createTextNode( '[ delete ]' ) );
 
     return removeButton;
 };
+
+// const getRemoveButton = onRemove =>
+// {
+//     let removeButton = document.createElement( 'button' );
+//     let onRmButtonClick = event =>
+//     {
+//         removeButton.removeEventListener( 'click', onRmButtonClick );
+//         onRemove();
+//     };
+//
+//     removeButton.addEventListener( 'click', onRmButtonClick );
+//     removeButton.appendChild( document.createTextNode( 'remove' ) );
+//
+//     return removeButton;
+// };
 
 const putListItem = ( { label, onRemove, placeholder, tooltip } ) =>
 {
@@ -130,7 +147,7 @@ storage.load('access_token')
   {
       addUserButton.disabled = 'disabled';
       let newUser = document.getElementById( 'newUser' );
-      api( `/users/${newUser.value}` )
+      publicApi( `/users/${newUser.value}` )
       .then( user =>
       {
           return storage.load('userList', [])

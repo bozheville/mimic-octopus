@@ -47,8 +47,19 @@ const api = link =>
     } );
 };
 
+const publicApi = link =>
+{
+    return fetch( `https://api.github.com${link}` )
+    .then( response => response.json() )
+    .catch(err =>
+    {
+        console.warn(err);
+        return Promise.reject();
+    } );
+};
 
-let setUser = () => new Promise( ( resolve, reject ) =>
+
+let getUserCookie = () => new Promise( ( resolve, reject ) =>
 {
     chrome.cookies.get(
     {

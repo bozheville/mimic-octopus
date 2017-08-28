@@ -3,6 +3,8 @@
 
 ## Description
 
+`v.0.0.2`
+
 Extension that helps to navigate throw Sociomantic's github repositories.
 
 
@@ -14,18 +16,35 @@ Extension that helps to navigate throw Sociomantic's github repositories.
  - add users to follow
 
 ## Features
+`v.0.0.1`
  - See the repo/user grid with links to original repo and forks
  - View PRs where user is reviewer
  - View PRs created by user
  - Show user's issues
- - Use ctrl/cmd + click or mouse wheel click to open an inactive tab _(the extension remains open)_
+ - Use ctrl/cmd + click to open an inactive tab _(the extension remains open)_
+   - Also should work with mouse wheel click, but need to check
+
+
+ `v.0.0.2`
+ - Current user automatically added as one of followed as well as organization
+ - User gets notifications about new requests to review the PR
 
 ## TODO
 
-### Features
- - _(Not sure yet)_ Show all Sociomantic repos and allow to mark them, using checkboxes
- - Add notifications on new items
+### First release
 
-### Fixes && updates
+- Features
+ - Add notifications on new issues
+
+- Fixes && updates
  - Need to make it less ugly
- - Make <me> one of following users, so no need to add <me> separately as follower
+ - Update file structure
+
+### Future releases
+- Features
+  - _(Not sure yet)_ Show all org repos and allow to mark them, using checkboxes
+  - Notifications
+    - Allow user to change update period
+    - Allow user to switch off notifications
+      - Any notifications
+      - Only for pr/issue

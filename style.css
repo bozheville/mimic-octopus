@@ -61,6 +61,11 @@ td:not(:first-child):hover::after
     display : none;
 }
 
+.m-l-base
+{
+    margin-left: 8px;
+}
+
 .header
 {
     text-align : center;

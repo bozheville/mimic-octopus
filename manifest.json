@@ -1,6 +1,6 @@
 {
     "name": "Mimic octopus",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "manifest_version": 2,
     "background": {
       "scripts": [
@@ -11,13 +11,18 @@
     "permissions": [
         "cookies",
         "storage",
+        "notifications",
         "tabs",
         "https://github.com/*",
         "https://api.github.com/*"
     ],
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png" },
     "content_security_policy": "script-src 'self' https://api.github.com; object-src 'self'",
     "browser_action": {
-        "default_title": "Open",
+        "default_title": "Mimic Octopus",
         "default_popup": "popup.html"
     },
     "options_ui": {
