@@ -59,7 +59,7 @@ let checkNotifications = () => storage.load( 'repoList' ).then( repoList => Prom
             chrome.notifications.create(
             {
                 type        : 'basic',
-                iconUrl     : 'octopus_32.png',
+                iconUrl     : 'img/icon32.png',
                 title       : 'New PR to review',
                 message     : `${pr.repo}: ${pr.title}`,
                 isClickable : true

@@ -29,6 +29,18 @@ Extension that helps to navigate throw Sociomantic's github repositories.
  - Current user automatically added as one of followed as well as organization
  - User gets notifications about new requests to review the PR
 
+
+ `v.0.0.3`
+ - tbd
+
+
+## Changelog
+`v.0.0.3`
+- update file structure
+  - images moved to `img/`
+  - renamed `popup.js`
+  - removed `package.json`
+
 ## TODO
 
 ### First release
@@ -39,6 +51,7 @@ Extension that helps to navigate throw Sociomantic's github repositories.
 - Fixes && updates
  - Need to make it less ugly
  - Update file structure
+ - Make new logo
 
 ### Future releases
 - Features
