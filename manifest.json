@@ -1,9 +1,16 @@
 {
-    "name": "sociomantic-github-grid-extention",
+    "name": "Mimic octopus",
     "version": "0.0.1",
     "manifest_version": 2,
+    "background": {
+      "scripts": [
+          "common.js",
+          "background.js"
+      ]
+    },
     "permissions": [
         "cookies",
+        "storage",
         "tabs",
         "https://github.com/*",
         "https://api.github.com/*"

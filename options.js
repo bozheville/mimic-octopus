@@ -1,19 +1,15 @@
 
-let userList = JSON.parse(localStorage.getItem('userList') || '{}');
-let repoList = JSON.parse(localStorage.getItem('repoList') || '[]');
-let accessToken = localStorage.getItem( 'accessToken' );
-
 const getRemoveButton = onRemove =>
 {
-    let removeButton = document.createElement('button');
+    let removeButton = document.createElement( 'button' );
     let onRmButtonClick = event =>
     {
-        removeButton.removeEventListener('click', onRmButtonClick);
+        removeButton.removeEventListener( 'click', onRmButtonClick );
         onRemove();
     };
 
-    removeButton.addEventListener('click', onRmButtonClick);
-    removeButton.appendChild(document.createTextNode('remove'));
+    removeButton.addEventListener( 'click', onRmButtonClick );
+    removeButton.appendChild( document.createTextNode( 'remove' ) );
 
     return removeButton;
 };
@@ -29,117 +25,157 @@ const putListItem = ( { label, onRemove, placeholder, tooltip } ) =>
     {
         span.setAttribute( 'data-tooltip', tooltip );
     }
-    
+
     span.appendChild( text );
     node.appendChild( span );
     node.appendChild( removeButton );
     placeholder.appendChild( node );
 };
 
-const saveJSON = (key, data) => {
-    localStorage.setItem( key, JSON.stringify( data ) );
-};
-
-const saveRepoList = data => {
-    localStorage.setItem(
-        'repoList',
-        JSON.stringify( data )
-    );
-};
-
-const putUsers = () => {
-    let placeHolder = document.getElementById( 'userList' );
+const putItems = ( { dataKey, getParams, getUpdatedList, updateView } ) =>
+{
+    let placeHolder = document.getElementById( dataKey );
     placeHolder.innerHTML = '';
 
-    for ( let userLogin of Object.keys( userList ) ) {
-        putListItem( {
-            label       : userList[userLogin],
-            tooltip     : userLogin,
-            placeholder : placeHolder,
-            onRemove    : () =>
-                                {
-                                    delete userList[ userLogin ];
-                                    saveJSON( 'userList', userList );
-                                    putUsers();
-                                }
-        } );
-    }
+    storage.load( dataKey, [] )
+    .then( itemList =>
+    {
+        for ( let item of itemList )
+        {
+            putListItem (
+                Object.assign( {}, getParams( item ),
+                {
+                    placeholder : placeHolder,
+                    onRemove    : () =>
+                    {
+                        storage.save( {
+                            [ dataKey ] :  getUpdatedList( itemList, item )
+                        } );
+                        updateView();
+                    }
+              } )
+           );
+        }
+    } );
 };
 
-const putRepos = () => {
-    let placeHolder = document.getElementById( 'repoList' )
-    placeHolder.innerHTML = '';
-    for ( let repo of repoList ) {
-        putListItem( {
-            label       : repo,
-            placeholder : placeHolder,
-            onRemove    : () =>
-                          {
-                              repoList = repoList.filter( r => r !== repo );
-                              saveJSON( 'repoList', repoList );
-                              putRepos();
-                          }
-        } );
-    }
+const putUsers = () =>
+{
+    putItems(
+    {
+        dataKey : 'userList',
+        getParams: user => ( { label : user.name, tooltip : user.login } ),
+        getUpdatedList :  ( userList, user) => userList.filter( u => u.url !== user.url ),
+        updateView : () => putUsers()
+    } );
+};
+
+const putRepos = () =>
+{
+    putItems(
+    {
+        dataKey : 'repoList',
+        getParams: repo => ( { label : repo.name, } ),
+        getUpdatedList :  ( repoList, repo) => repoList.filter( u => u.url !== repo.url ),
+        updateView : () => putRepos()
+    } );
 };
 
 putUsers();
 putRepos();
 
-const api = link =>
-{
-    return fetch( `https://api.github.com${link}?access_token=${accessToken}` )
-    .then( response => response.json() );
-}
 
-window.onload = () =>
+storage.load('currentUser').then(user =>
 {
-    const token         = document.getElementById( 'token' );
-    const addUserButton = document.getElementById( 'addUser' );
-    const addRepoButton = document.getElementById( 'addRepo' );
+  const container = document.getElementById('logged-in-as');
+  let link = document.createElement('a');
+  link.href = user.url;
+  const text = document.createTextNode( `${user.name} (${user.login})` );
+  link.appendChild(text);
+  container.appendChild(link);
+} );
+
+storage.load('access_token')
+.then( accessToken =>
+{
+    const token = document.getElementById( 'token' );
     token.value = accessToken;
-
-    if( !accessToken )
-    {
-        addRepoButton.disabled = 'disabled';
-        addUserButton.disabled = 'disabled';
-    }
 
     token.addEventListener( 'change', event =>
     {
-        localStorage.setItem( 'accessToken', event.target.value );
-        addRepoButton.disabled = false;
-        addUserButton.disabled = false;
-    } );
-
-    addUserButton.addEventListener( 'click', event =>
-    {
-        addUserButton.disabled = 'disabled';
-        let newUser = document.getElementById( 'newUser' );
-        api( `/users/${newUser.value}` )
-        .then( user =>
+        storage.save(
         {
-            userList[ user.login ] = user.name
-            saveJSON( 'userList', userList );
-            addUserButton.disabled = false;
-            newUser.value = '';
-            putUsers();
-        } );
-    } );
-
-    addRepoButton.addEventListener( 'click', event =>
-    {
-        addRepoButton.disabled = 'disabled';
-        let input = document.getElementById( 'newRepo' );
-        api( `/repos/sociomantic/${input.value}` )
-        .then( repo =>
+            access_token: event.target.value
+        } ).then( () =>
         {
-            repoList.push( repo.name );
-            saveJSON( 'repoList', repoList );
             addRepoButton.disabled = false;
-            input.value = '';
-            putRepos();
+            addUserButton.disabled = false;
         } );
     } );
 
-}
+    return accessToken;
+} )
+.then( accessToken =>
+{
+  const addUserButton = document.getElementById( 'addUser' );
+  const addRepoButton = document.getElementById( 'addRepo' );
+
+  if ( !accessToken )
+  {
+      addRepoButton.disabled = 'disabled';
+      addUserButton.disabled = 'disabled';
+  }
+
+  addUserButton.addEventListener( 'click', event =>
+  {
+      addUserButton.disabled = 'disabled';
+      let newUser = document.getElementById( 'newUser' );
+      api( `/users/${newUser.value}` )
+      .then( user =>
+      {
+          return storage.load('userList', [])
+          .then( userList =>
+          {
+              userList.push(
+              {
+                  login : user.login,
+                  name  : user.name,
+                  url   : user.html_url
+              } );
+
+              storage.save( { userList } ).then(() => {
+                  addUserButton.disabled = false;
+                  newUser.value = '';
+                  putUsers();
+              } );
+          } );
+      } );
+  } );
+
+  addRepoButton.addEventListener( 'click', event =>
+  {
+      addRepoButton.disabled = 'disabled';
+      let input = document.getElementById( 'newRepo' );
+
+      api( `/repos/sociomantic/${input.value}` )
+      .then( repo =>
+      {
+          return storage.load('repoList', [])
+          .then(repoList =>
+          {
+              repoList.push(
+              {
+                  name : repo.name,
+                  url  : repo.html_url
+              } );
+              storage.save( { repoList } )
+              .then( () =>
+              {
+                  addRepoButton.disabled = false;
+                  input.value = '';
+                  putRepos();
+              });
+          } );
+      } );
+  } );
+} );
