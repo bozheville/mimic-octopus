@@ -72,6 +72,20 @@ td:not(:first-child):hover::after
     min-height : 12px;
 }
 
+ul.hightlight-rows li
+{
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 14px;
+}
+
+ul.hightlight-rows li:hover
+{
+    background-color: #f3f3f3;
+}
+
 .loading-progress
 {
     width : 80px;

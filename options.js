@@ -11,25 +11,44 @@ const getRemoveButton = onRemove =>
     };
 
     removeButton.addEventListener( 'click', onRmButtonClick );
-    removeButton.appendChild( document.createTextNode( '[ delete ]' ) );
+    const img = document.createElement( 'img' );
+    img.src = './img/delete24.png';
+    removeButton.appendChild( img );
 
     return removeButton;
 };
 
-// const getRemoveButton = onRemove =>
-// {
-//     let removeButton = document.createElement( 'button' );
-//     let onRmButtonClick = event =>
-//     {
-//         removeButton.removeEventListener( 'click', onRmButtonClick );
-//         onRemove();
-//     };
-//
-//     removeButton.addEventListener( 'click', onRmButtonClick );
-//     removeButton.appendChild( document.createTextNode( 'remove' ) );
-//
-//     return removeButton;
-// };
+const addButtonListener = ( { button, dataInputId, checkUrl, storageId, itemMap, onClick, apiMethod } ) =>
+{
+    button.addEventListener( 'click', event =>
+    {
+        button.disabled = 'disabled';
+        let dataInput = document.getElementById( dataInputId );
+        apiMethod( checkUrl + dataInput.value )
+        .then( item => storage.load(storageId, [])
+            .then( itemsList =>
+            {
+                let newItem = Object.keys( itemMap ).reduce( (result, key) => (
+                {
+                    ...result,
+                    [ key ] : itemMap[ key ]( item )
+                } ), {} );
+
+                itemsList.push( newItem );
+
+                storage.save(
+                {
+                    [ storageId ] : itemsList
+                } ).then(() =>
+                {
+                    button.disabled = false;
+                    dataInput.value = '';
+                    onClick();
+                } );
+            } )
+        );
+    } );
+};
 
 const putListItem = ( { label, onRemove, placeholder, tooltip } ) =>
 {
@@ -98,6 +117,7 @@ const putRepos = () =>
     } );
 };
 
+
 putUsers();
 putRepos();
 
@@ -134,65 +154,43 @@ storage.load('access_token')
 } )
 .then( accessToken =>
 {
-  const addUserButton = document.getElementById( 'addUser' );
-  const addRepoButton = document.getElementById( 'addRepo' );
+    const addUserButton = document.getElementById( 'addUser' );
+    const addRepoButton = document.getElementById( 'addRepo' );
 
-  if ( !accessToken )
-  {
+    if ( !accessToken )
+    {
       addRepoButton.disabled = 'disabled';
       addUserButton.disabled = 'disabled';
-  }
+    }
 
-  addUserButton.addEventListener( 'click', event =>
-  {
-      addUserButton.disabled = 'disabled';
-      let newUser = document.getElementById( 'newUser' );
-      publicApi( `/users/${newUser.value}` )
-      .then( user =>
-      {
-          return storage.load('userList', [])
-          .then( userList =>
-          {
-              userList.push(
-              {
-                  login : user.login,
-                  name  : user.name,
-                  url   : user.html_url
-              } );
+    addButtonListener(
+    {
+        button      : addUserButton,
+        dataInputId : 'newUser',
+        checkUrl    : '/users/',
+        storageId   : 'userList',
+        onClick     : putUsers,
+        apiMethod   : publicApi,
+        itemMap     :
+        {
+            login : user => user.login,
+            name  : user => user.name || user.login,
+            url   : user => user.html_url
+        }
+    } );
 
-              storage.save( { userList } ).then(() => {
-                  addUserButton.disabled = false;
-                  newUser.value = '';
-                  putUsers();
-              } );
-          } );
-      } );
-  } );
-
-  addRepoButton.addEventListener( 'click', event =>
-  {
-      addRepoButton.disabled = 'disabled';
-      let input = document.getElementById( 'newRepo' );
-
-      api( `/repos/sociomantic/${input.value}` )
-      .then( repo =>
-      {
-          return storage.load('repoList', [])
-          .then(repoList =>
-          {
-              repoList.push(
-              {
-                  name : repo.name,
-                  url  : repo.html_url
-              } );
-              storage.save( { repoList } )
-              .then( () =>
-              {
-                  addRepoButton.disabled = false;
-                  input.value = '';
-                  putRepos();
-              });
-          } );
-      } );
-  } );
+    addButtonListener(
+    {
+        button      : addRepoButton,
+        dataInputId : 'newRepo',
+        checkUrl    : '/repos/sociomantic/',
+        storageId   : 'repoList',
+        onClick     : putRepos,
+        apiMethod   : api,
+        itemMap     :
+        {
+            name : repo => repo.name,
+            url  : repo => repo.html_url
+        }
+    } );
 } );

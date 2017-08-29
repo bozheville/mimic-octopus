@@ -2,6 +2,7 @@
     "name": "Mimic octopus",
     "version": "0.0.3",
     "manifest_version": 2,
+    "description": "Extension that helps to navigate throw Sociomantic's github repositories.",
     "background": {
       "scripts": [
           "common.js",

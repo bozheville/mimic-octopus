@@ -1,5 +1,6 @@
 const organization = 'sociomantic';
 let openPRsToReviewList = [];
+let openIssuesList = [];
 
 getUserCookie().then( userId =>
 {
@@ -31,24 +32,21 @@ let checkNotifications = () => storage.load( 'repoList' ).then( repoList => Prom
 
     return storage.load( 'currentUser' ).then( currentUser =>
     {
-        for ( let repo of prsByRepo )
-        {
-            for ( let pr of repo )
-            {
-                if ( pr.requested_reviewers.findIndex(reviewer => reviewer.login === currentUser.login) !== -1 )
-                {
-                    reviewPRs.push( {
-                        id    : pr.id,
-                        title : pr.title,
-                        repo  : pr.head.repo.name,
-                        state : pr.state,
-                        url   : pr.html_url
-                    } );
-                }
-            }
-        }
+        const isMeReviewer = reviewer => reviewer.login === currentUser.login;
+        const isReviewPr = pr => pr.requested_reviewers.findIndex(isMeReviewer) !== -1;
 
-        return reviewPRs
+        reviewPRs = prsByRepo
+        .reduce( (result, pulls ) => [...result, ...pulls], [] )
+        .filter( isReviewPr )
+        .map( pr => (
+        {
+            id    : pr.id,
+            title : pr.title,
+            repo  : pr.head.repo.name,
+            url   : pr.html_url
+        } ) );
+
+        return reviewPRs;
     } );
 } ).then( reviewPRs =>
 {
@@ -73,8 +71,38 @@ let checkNotifications = () => storage.load( 'repoList' ).then( repoList => Prom
     openPRsToReviewList = reviewPRs.map(pr => pr.id);
 } );
 
+let checkIssuesNotifications = () => api(`/orgs/${organization}/issues`)
+.then( issuesList =>
+{
+    for ( let issue of issuesList )
+    {
+        if (!openIssuesList.includes( issue.id ) )
+        {
+            chrome.notifications.create(
+            {
+                type        : 'basic',
+                iconUrl     : 'img/icon32.png',
+                title       : 'New issue',
+                message     : `${issue.repository.name}: ${issue.title}`,
+                isClickable : true
+            }, (id) =>
+            {
+                urlMapping[id] = issue.html_url;
+            } );
+        }
+    }
+
+    openIssuesList = issuesList.map(issue => issue.id);
+} );
+
 checkNotifications();
-setInterval(checkNotifications, 30000);
+checkIssuesNotifications();
+
+setInterval(() =>
+{
+    checkNotifications();
+    checkIssuesNotifications();
+}, 30000);
 
 chrome.notifications.onClicked.addListener( id => {
     chrome.tabs.create(

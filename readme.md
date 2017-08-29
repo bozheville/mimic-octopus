@@ -3,7 +3,7 @@
 
 ## Description
 
-`v.0.0.2`
+`v.0.0.3`
 
 Extension that helps to navigate throw Sociomantic's github repositories.
 
@@ -31,7 +31,7 @@ Extension that helps to navigate throw Sociomantic's github repositories.
 
 
  `v.0.0.3`
- - tbd
+ - User gets notifications about new assigned issues
 
 
 ## Changelog
@@ -40,22 +40,15 @@ Extension that helps to navigate throw Sociomantic's github repositories.
   - images moved to `img/`
   - renamed `popup.js`
   - removed `package.json`
+- refactor "add" buttons listener on options page
+- Add notifications on new issues
 
 ## TODO
 
-### First release
-
 - Features
- - Add notifications on new issues
-
-- Fixes && updates
- - Need to make it less ugly
- - Update file structure
- - Make new logo
-
-### Future releases
-- Features
-  - _(Not sure yet)_ Show all org repos and allow to mark them, using checkboxes
+  - `Make options more friendly when no user logged / no token provided`
+  - On a separate tab show all org repos and allow to mark them, using checkboxes
+  - On a separate tab show all org users and allow to mark them, using checkboxes
   - Notifications
     - Allow user to change update period
     - Allow user to switch off notifications
