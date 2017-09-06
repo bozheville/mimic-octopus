@@ -4,24 +4,29 @@ let openIssuesList = [];
 
 getUserCookie().then( userId =>
 {
-    api( `/users/${userId}` )
-    .then( user =>
+    if ( userId )
     {
-        storage.save(
+        api( `/users/${userId}` )
+        .then( user =>
         {
-            currentUser:
+            storage.save(
             {
-                name  : user.name,
-                login : user.login,
-                url   : user.html_url
-            }
+                currentUser:
+                {
+                    name  : user.name,
+                    login : user.login,
+                    url   : user.html_url
+                }
+            } );
         } );
-    } );
-} );
+    }
+} )
+.catch( _ => _ );
 
 let urlMapping = {};
 
-let checkNotifications = () => storage.load( 'repoList' ).then( repoList => Promise.all(
+let checkNotifications = () => storage.load( 'repoList' )
+.then( ( repoList = [] ) => Promise.all(
     repoList
     .map ( repo => `/repos/${organization}/${repo.name}/pulls` )
     .map ( link => api( link ) )
@@ -71,12 +76,13 @@ let checkNotifications = () => storage.load( 'repoList' ).then( repoList => Prom
     openPRsToReviewList = reviewPRs.map(pr => pr.id);
 } );
 
-let checkIssuesNotifications = () => api(`/orgs/${organization}/issues`)
+
+let checkIssuesNotifications = () => api( `/orgs/${organization}/issues` )
 .then( issuesList =>
 {
     for ( let issue of issuesList )
     {
-        if (!openIssuesList.includes( issue.id ) )
+        if ( !openIssuesList.includes( issue.id ) )
         {
             chrome.notifications.create(
             {
@@ -92,19 +98,26 @@ let checkIssuesNotifications = () => api(`/orgs/${organization}/issues`)
         }
     }
 
-    openIssuesList = issuesList.map(issue => issue.id);
+    openIssuesList = issuesList.map( issue => issue.id );
 } );
 
-checkNotifications();
-checkIssuesNotifications();
 
-setInterval(() =>
+setInterval( () =>
 {
-    checkNotifications();
-    checkIssuesNotifications();
-}, 30000);
+    getUserCookie()
+    .then( userId =>
+    {
+        if ( userId )
+        {
+            checkNotifications();
+            checkIssuesNotifications();
+        }
+    } )
+    .catch( _ => _ );
+}, 30000 );
 
-chrome.notifications.onClicked.addListener( id => {
+chrome.notifications.onClicked.addListener( id =>
+{
     chrome.tabs.create(
     {
         url: urlMapping[id]

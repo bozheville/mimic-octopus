@@ -1,6 +1,7 @@
 body
 {
     --backgroundColor : #f5f5f5;
+    width: 500px;
 }
 
 .table-row-name
@@ -59,6 +60,13 @@ td:not(:first-child):hover::after
 .hidden
 {
     display : none;
+}
+
+.disabled
+{
+    pointer-events: none;
+    opacity: 0.7;
+
 }
 
 .m-l-base

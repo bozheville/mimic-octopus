@@ -6,40 +6,66 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div id="logged-in-as"></div>
-        <label for="token">
-            <h3>
-                Access token
-                <small>
-                    <a
-                        href="https://github.com/settings/tokens/new"
-                        target="_blank" >
+        <div id="login">
+            <a href="https://github.com">Login in github</a>
+        </div>
+        <div id="content" class="hidden">
+            <div id="logged-in-as"></div>
+            <label for="token">
+                <h3>
+                    Access token
+                    <small>
+                        <a
+                            href="https://github.com/settings/tokens/new"
+                            target="_blank" >
 
-                        Get new token
-                    </a>
-                </small>
-            </h3>
-            <input type="text" class="full-width" type="text" id="token" />
-        </label>
-        <h3>Follow users</h3>
-        <div>
-            <ul id="userList" class="hightlight-rows"></ul>
-            <label for="newUser">
-                <span>Add user (user login)</span>
-                <input type="text" id="newUser" />
+                            Get new token
+                        </a>
+                    </small>
+                </h3>
+                <input
+                    type        = "text"
+                    id          = "token"
+                    class       = "full-width"
+                    placeholder = "Paste access token here" />
+
             </label>
-            <button type="button" id="addUser">Add user</button>
+            <div id="followingLists" class="disabled">
+                <h3>Follow users</h3>
+                <div>
+                    <ul id="userList" class="hightlight-rows"></ul>
+                    <label for="newUser">
+                        <input
+                            type        = "text"
+                            id          = "newUser"
+                            placeholder = "Add user (user login)" />
+                        <button
+                            type = "button"
+                            id   = "addUser" >
+
+                            Add user
+                        </button>
+                    </label>
+                </div>
+                <h3>Follow repos</h3>
+                <div>
+                    <ul id="repoList" class="hightlight-rows"></ul>
+                    <label for="newRepo">
+                        <input
+                            type        = "text"
+                            id          = "newRepo"
+                            placeholder = "Add repo (repo name)" />
+                        <button
+                            type = "button"
+                            id   = "addRepo" >
+
+                            Add repository
+                        </button>
+                    </label>
+                </div>
+            </div>
         </div>
-        <h3>Follow repos</h3>
-        <div>
-            <ul id="repoList" class="hightlight-rows"></ul>
-            <label for="newRepo">
-                <span>Add repo (repo name)</span>
-                <input type="text" id="newRepo" />
-            </label>
-            <button type="button" id="addRepo" >Add repository</button>
-        </div>
-        <script type="text/javascript" src="common.js"></script>
-        <script type="text/javascript" src="options.js"></script>
+        <script type="text/javascript" src="common.js"  ></script>
+        <script type="text/javascript" src="options.js" ></script>
     </body>
 </html>

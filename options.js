@@ -1,4 +1,3 @@
-
 const getRemoveButton = onRemove =>
 {
     let removeButton = document.createElement( 'span' );
@@ -118,79 +117,116 @@ const putRepos = () =>
 };
 
 
-putUsers();
-putRepos();
-
-
-storage.load('currentUser').then(user =>
+getUserCookie()
+.then( userId =>
 {
-  const container = document.getElementById('logged-in-as');
-  let link = document.createElement('a');
-  link.href = user.url;
-  const text = document.createTextNode( `${user.name} (${user.login})` );
-  link.appendChild(text);
-  container.appendChild(link);
-} );
-
-storage.load('access_token')
-.then( accessToken =>
-{
-    const token = document.getElementById( 'token' );
-    token.value = accessToken;
-
-    token.addEventListener( 'change', event =>
+    if ( userId )
     {
-        storage.save(
+        api( `/users/${userId}` )
+        .then( user =>
         {
-            access_token: event.target.value
-        } ).then( () =>
-        {
-            addRepoButton.disabled = false;
-            addUserButton.disabled = false;
+            storage.save(
+            {
+                currentUser:
+                {
+                    name  : user.name,
+                    login : user.login,
+                    url   : user.html_url
+                }
+            } );
         } );
-    } );
-
-    return accessToken;
-} )
-.then( accessToken =>
-{
-    const addUserButton = document.getElementById( 'addUser' );
-    const addRepoButton = document.getElementById( 'addRepo' );
-
-    if ( !accessToken )
-    {
-      addRepoButton.disabled = 'disabled';
-      addUserButton.disabled = 'disabled';
     }
+} )
+.catch( _ => _ );
 
-    addButtonListener(
-    {
-        button      : addUserButton,
-        dataInputId : 'newUser',
-        checkUrl    : '/users/',
-        storageId   : 'userList',
-        onClick     : putUsers,
-        apiMethod   : publicApi,
-        itemMap     :
-        {
-            login : user => user.login,
-            name  : user => user.name || user.login,
-            url   : user => user.html_url
-        }
-    } );
+getUserCookie().then( userId =>
+{
+    if (userId) {
 
-    addButtonListener(
-    {
-        button      : addRepoButton,
-        dataInputId : 'newRepo',
-        checkUrl    : '/repos/sociomantic/',
-        storageId   : 'repoList',
-        onClick     : putRepos,
-        apiMethod   : api,
-        itemMap     :
+        document.getElementById('login').classList.add('hidden')
+        document.getElementById('content').classList.remove('hidden')
+
+        putUsers();
+        putRepos();
+
+
+        storage.load('currentUser').then(user =>
         {
-            name : repo => repo.name,
-            url  : repo => repo.html_url
-        }
-    } );
-} );
+          const container = document.getElementById('logged-in-as');
+          let link = document.createElement('a');
+          link.href = user.url;
+          const text = document.createTextNode( `${user.name} (${user.login})` );
+          link.appendChild(text);
+          container.appendChild(link);
+        } );
+
+        storage.load('access_token')
+        .then( accessToken =>
+        {
+            const token = document.getElementById( 'token' );
+            if ( accessToken )
+            {
+                token.value = accessToken;
+            }
+
+            token.addEventListener( 'keyup', event =>
+            {
+                storage.save(
+                {
+                    access_token: event.target.value
+                } ).then( () =>
+                {
+                    if ( event.target.value )
+                    {
+                        document.getElementById( 'followingLists' ).classList.remove( 'disabled' );
+                    }
+                    else
+                    {
+                        document.getElementById( 'followingLists' ).classList.add( 'disabled' );
+                    }
+                } );
+            } );
+
+            return accessToken;
+        } )
+        .then( accessToken =>
+        {
+            if ( accessToken )
+            {
+                document.getElementById( 'followingLists' ).classList.remove( 'disabled' );
+            }
+
+            addButtonListener(
+            {
+                button      : document.getElementById( 'addUser' ),
+                dataInputId : 'newUser',
+                checkUrl    : '/users/',
+                storageId   : 'userList',
+                onClick     : putUsers,
+                apiMethod   : publicApi,
+                itemMap     :
+                {
+                    login : user => user.login,
+                    name  : user => user.name || user.login,
+                    url   : user => user.html_url
+                }
+            } );
+
+            addButtonListener(
+            {
+                button      : document.getElementById( 'addRepo' ),
+                dataInputId : 'newRepo',
+                checkUrl    : '/repos/sociomantic/',
+                storageId   : 'repoList',
+                onClick     : putRepos,
+                apiMethod   : api,
+                itemMap     :
+                {
+                    name : repo => repo.name,
+                    url  : repo => repo.html_url
+                }
+            } );
+        } );
+    }
+} )
+.catch( _ => _ );

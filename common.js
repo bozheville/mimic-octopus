@@ -59,7 +59,7 @@ const publicApi = link =>
 };
 
 
-let getUserCookie = () => new Promise( ( resolve, reject ) =>
+const getUserCookie = () => new Promise( ( resolve, reject ) =>
 {
     chrome.cookies.get(
     {
@@ -68,7 +68,24 @@ let getUserCookie = () => new Promise( ( resolve, reject ) =>
     },
     cookie =>
     {
-      MY_USERNAME = cookie.value;
-      resolve(MY_USERNAME);
+        if (cookie)
+        {
+            resolve(cookie.value);
+        }
+        else
+        {
+           reject();
+        }
+
     } );
+} );
+
+const getAccessToken = () => storage.load('access_token').then( token => {
+
+    // TODO: REMOVE CONSOLE.LOG()!!!!!!!
+     // ---------------------------------
+     console.log('token', token);
+     // ---------------------------------
+
+    return Promise[token ? 'resolve' : 'reject' ]()
 } );
