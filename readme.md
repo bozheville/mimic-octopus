@@ -35,6 +35,8 @@ Extension that helps to navigate throw Sociomantic's github repositories.
  `v.0.0.3`
 
  - User gets notifications about new assigned issues
+ - Add notifications on new issues
+ - Make options more friendly when no user logged / no token provided
 
 
 ## Changelog
