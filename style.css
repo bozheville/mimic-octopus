@@ -4,6 +4,46 @@ body
     width: 500px;
 }
 
+.app-bar {
+    height: 28px;
+    background-color: #444;
+    margin: -8px;
+    color: #fff;
+    padding: 4px;
+    font-size: 18px;
+}
+
+.empty-repo-list
+{
+    min-height       : 25%;
+    width            : calc(100% - 48px);
+    margin           : 12px;
+    padding          : 12px;
+    border           : 1px solid indianred;
+    background-color : #ffd589;
+    border-radius    : 5px;
+}
+
+.align-center
+{
+    text-align : center;
+}
+
+.button
+{
+    position         : relative;
+    display          : inline-block;
+    padding          : 4px 8px;
+    background-color : #f2f2f2;
+    text-decoration  : none !important;
+    box-shadow       : 1px 1px 2px 0px rgba(0,0,0,0.75);
+}
+
+.button:hover
+{
+    background-color : #eee;
+}
+
 .table-row-name
 {
     white-space : nowrap;
@@ -16,6 +56,7 @@ table
     border-collapse : collapse;
     overflow        : hidden;
     z-index         : 1;
+    width           : 100%
 }
 
 td, th

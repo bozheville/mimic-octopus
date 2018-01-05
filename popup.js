@@ -37,6 +37,8 @@ window.addEventListener( 'keyup', event =>
     if ( event.keyCode === CTRL_KEY_CODE ) IS_CTRL    = false;
 } );
 
+document.getElementById( 'org-name' ).innerHTML = organization;
+
 
 const addLinkListener = (item, url) =>
 {
@@ -73,9 +75,8 @@ const putGridToUI = grid =>
         emptyListContainer.classList.add('hidden');
         getFullUserList().then( userList =>
         {
-            let userMap = userList.reduce( ( map, user ) => (
+            let userMap = userList.reduce( ( map, user ) => Object.assign({}, map,
             {
-                ...map,
                 [ user.login ] : user.name
             } ), {} );
 
@@ -291,22 +292,21 @@ shouldOpenOptions().then(() =>
         return Promise.all(
             repoList.map ( repo => api( `/repos/${organization}/${repo.name}/forks` ) )
         )
-        .then(response => ( { response, userList, repoList } ) )
+        .then(forks => ( { forks, userList, repoList } ) )
     } )
-    .then( ( { response, userList, repoList } ) =>
+    .then( ( { forks, userList, repoList } ) =>
     {
         let followPersons = userList.map( user => user.login);
         let followRepos = repoList.map( repo => repo.name );
 
         document.getElementById( 'loader' ).classList.add( 'hidden' );
         return {
-            grid: response.reduce( ( grid, repo, index ) =>
+            grid: forks.reduce( ( grid, repo, index ) =>
             {
                 grid[ followRepos[ index ] ] = repo
                 .filter( fork => followPersons.includes( fork.owner.login ) )
-                .reduce( ( grid, fork ) => (
+                .reduce( ( grid, fork ) => Object.assign( {}, grid,
                     {
-                        ...grid,
                         [ fork.owner.login ] : fork.html_url
                     } ),
                     {

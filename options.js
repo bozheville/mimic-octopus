@@ -27,9 +27,8 @@ const addButtonListener = ( { button, dataInputId, checkUrl, storageId, itemMap,
         .then( item => storage.load(storageId, [])
             .then( itemsList =>
             {
-                let newItem = Object.keys( itemMap ).reduce( (result, key) => (
+                let newItem = Object.keys( itemMap ).reduce( (result, key) => Object.assign({}, result,
                 {
-                    ...result,
                     [ key ] : itemMap[ key ]( item )
                 } ), {} );
 

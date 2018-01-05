@@ -6,7 +6,7 @@ const storage =
         {
             chrome.storage.local.set( data , () =>
             {
-                resolve(data);
+                resolve( data );
             } );
         } );
     },
@@ -33,9 +33,13 @@ const storage =
     }
 };
 
+const getAccessToken = () => storage.load('access_token').then( token => {
+     return token || Promise.reject( "no access token provided" );
+} );
+
 const api = link =>
 {
-    return storage.load('access_token').then(token =>
+    return getAccessToken().then( token =>
     {
         return fetch( `https://api.github.com${link}?access_token=${token}` )
         .then( response => response.json() );
@@ -43,7 +47,7 @@ const api = link =>
     .catch(err =>
     {
         console.warn(err);
-        return Promise.reject();
+        return Promise.reject( err );
     } );
 };
 
@@ -51,10 +55,10 @@ const publicApi = link =>
 {
     return fetch( `https://api.github.com${link}` )
     .then( response => response.json() )
-    .catch(err =>
+    .catch( err =>
     {
-        console.warn(err);
-        return Promise.reject();
+        console.warn( err );
+        return Promise.reject( err );
     } );
 };
 
@@ -78,14 +82,4 @@ const getUserCookie = () => new Promise( ( resolve, reject ) =>
         }
 
     } );
-} );
-
-const getAccessToken = () => storage.load('access_token').then( token => {
-
-    // TODO: REMOVE CONSOLE.LOG()!!!!!!!
-     // ---------------------------------
-     console.log('token', token);
-     // ---------------------------------
-
-    return Promise[token ? 'resolve' : 'reject' ]()
 } );

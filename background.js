@@ -2,14 +2,27 @@ const organization = 'sociomantic';
 let openPRsToReviewList = [];
 let openIssuesList = [];
 
+let counters = {
+  myPRs     : 0,
+  reviewPRs : 0,
+  issues    : 0
+};
+
+const updateBadge = () => {
+    const sum = counters.myPRs + counters.reviewPRs + counters.issues;
+    chrome.browserAction.setBadgeText({text: `${sum}` })
+};
+
+updateBadge();
+
 getUserCookie().then( userId =>
 {
     if ( userId )
     {
-        api( `/users/${userId}` )
+        publicApi( `/users/${userId}` )
         .then( user =>
         {
-            storage.save(
+            return storage.save(
             {
                 currentUser:
                 {
@@ -17,7 +30,7 @@ getUserCookie().then( userId =>
                     login : user.login,
                     url   : user.html_url
                 }
-            } );
+            } ).then(_ => userId);
         } );
     }
 } )
@@ -37,9 +50,12 @@ let checkNotifications = () => storage.load( 'repoList' )
 
     return storage.load( 'currentUser' ).then( currentUser =>
     {
+
+        const isMyPR = pr => pr.user.login === currentUser.login;
         const isMeReviewer = reviewer => reviewer.login === currentUser.login;
         const isReviewPr = pr => pr.requested_reviewers.findIndex(isMeReviewer) !== -1;
-
+        counters.myPRs = prsByRepo.reduce( (result, pulls ) => [...result, ...pulls], [] ).filter( isMyPR ).length;
+        updateBadge();
         reviewPRs = prsByRepo
         .reduce( (result, pulls ) => [...result, ...pulls], [] )
         .filter( isReviewPr )
@@ -55,6 +71,8 @@ let checkNotifications = () => storage.load( 'repoList' )
     } );
 } ).then( reviewPRs =>
 {
+    counters.reviewPRs = reviewPRs.length;
+    updateBadge();
     for ( let pr of reviewPRs )
     {
         if ( !openPRsToReviewList.includes(pr.id) )
@@ -74,12 +92,15 @@ let checkNotifications = () => storage.load( 'repoList' )
     }
 
     openPRsToReviewList = reviewPRs.map(pr => pr.id);
-} );
+} )
+.catch( _ => {} );
 
 
 let checkIssuesNotifications = () => api( `/orgs/${organization}/issues` )
 .then( issuesList =>
 {
+    counters.issues = issuesList.length;
+    updateBadge();
     for ( let issue of issuesList )
     {
         if ( !openIssuesList.includes( issue.id ) )
@@ -99,21 +120,32 @@ let checkIssuesNotifications = () => api( `/orgs/${organization}/issues` )
     }
 
     openIssuesList = issuesList.map( issue => issue.id );
-} );
+} )
+.catch( _ => {} );
 
+
+
+const updateUserInfo = () =>
+{
+  return getUserCookie()
+  .then( userId =>
+  {
+      if ( userId )
+      {
+          checkNotifications();
+          checkIssuesNotifications();
+      }
+  } )
+  .catch( _ => _ );
+}
+
+updateUserInfo().then(() => {
+  chrome.tabs.create({ 'url': 'chrome://extensions/?options=' + chrome.runtime.id });
+});
 
 setInterval( () =>
 {
-    getUserCookie()
-    .then( userId =>
-    {
-        if ( userId )
-        {
-            checkNotifications();
-            checkIssuesNotifications();
-        }
-    } )
-    .catch( _ => _ );
+  updateUserInfo();
 }, 30000 );
 
 chrome.notifications.onClicked.addListener( id =>

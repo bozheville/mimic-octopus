@@ -3,9 +3,11 @@
 
 ## Description
 
-`v.0.0.3`
+`v.0.0.4`
 
 Extension that helps to navigate throw Sociomantic's github repositories.
+
+Allows to view a grid of following users&repos, view created pull requests and PRs to review. Allows to see assigned issues
 
 
 ## Settings
@@ -16,6 +18,41 @@ Extension that helps to navigate throw Sociomantic's github repositories.
  - add users to follow
 
 ## Features
+
+`v.0.0.4`
+
+ - Fix post-install bugs
+  - disable protected api call without token
+  - use open api to get user info
+  - open options page after user data loading
+ - updated popup layout
+  - updated "no repositories" layout
+  - added app header
+  - repo list table stretched to popup width
+ - add badge with summary count of related PRs and issues
+ - fix for linux-based chrome (no `{...}`, but `Object.assign`)
+
+
+`v.0.0.3`
+
+ - User gets notifications about new assigned issues
+ - Add notifications on new issues
+ - Make options more friendly when no user logged / no token provided
+ - update file structure
+  - images moved to `img/`
+  - renamed `popup.js`
+  - removed `package.json`
+ - refactor "add" buttons listener on options page
+ - Add notifications on new issues
+ - Make options more friendly when no user logged / no token provided
+
+
+ `v.0.0.2`
+
+ - Current user automatically added as one of followed as well as organization
+ - User gets notifications about new requests to review the PR
+
+
 `v.0.0.1`
 
  - See the repo/user grid with links to original repo and forks
@@ -25,30 +62,6 @@ Extension that helps to navigate throw Sociomantic's github repositories.
  - Use ctrl/cmd + click to open an inactive tab _(the extension remains open)_
    - Also should work with mouse wheel click, but need to check
 
-
- `v.0.0.2`
-
- - Current user automatically added as one of followed as well as organization
- - User gets notifications about new requests to review the PR
-
-
- `v.0.0.3`
-
- - User gets notifications about new assigned issues
- - Add notifications on new issues
- - Make options more friendly when no user logged / no token provided
-
-
-## Changelog
-`v.0.0.3`
-
-- update file structure
-  - images moved to `img/`
-  - renamed `popup.js`
-  - removed `package.json`
-- refactor "add" buttons listener on options page
-- Add notifications on new issues
-- Make options more friendly when no user logged / no token provided
 
 ## TODO
 
