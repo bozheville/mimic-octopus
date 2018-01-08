@@ -41,7 +41,8 @@ const api = link =>
 {
     return getAccessToken().then( token =>
     {
-        return fetch( `https://api.github.com${link}?access_token=${token}` )
+        const url = link.indexOf('http') !== -1 ? link : `https://api.github.com${link}`
+        return fetch( `${url}?access_token=${token}` )
         .then( response => response.json() );
     } )
     .catch(err =>

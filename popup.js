@@ -191,22 +191,22 @@ const convertData = ( { grid, followPersons } ) =>
 const putCache = grid =>
 {
     let data = JSON.stringify( grid );
-    localStorage.setItem('grid', data);
+    localStorage.setItem( 'grid', data );
     return grid;
 };
 
-let grid = localStorage.getItem('grid');
+let grid = localStorage.getItem( 'grid' );
 if (grid)
 {
-    putGridToUI( JSON.parse(grid) );
+    putGridToUI( JSON.parse( grid ) );
 }
 
 
-shouldOpenOptions().then(() =>
+shouldOpenOptions().then( () =>
 {
     chrome.runtime.openOptionsPage();
 } )
-.catch(() =>
+.catch( () =>
 {
 
     storage.load( 'repoList' ).then( ( repoList = [] ) => Promise.all(
@@ -288,11 +288,49 @@ shouldOpenOptions().then(() =>
         storage.load( 'repoList' ),
         getFullUserList()
     ] )
-    .then( ( [ currentUser, repoList = [], userList = [] ] ) => {
+    .then( ( [ currentUser, repoList = [], userList = [] ] ) =>
+    {
         return Promise.all(
             repoList.map ( repo => api( `/repos/${organization}/${repo.name}/forks` ) )
         )
-        .then(forks => ( { forks, userList, repoList } ) )
+        .then( forks => ( { forks, userList, repoList } ) )
+    } )
+    .then( ( { forks, userList, repoList } ) =>
+    {
+        const getNested = ( forks, updatedForksList ) =>
+        {
+          let nestedForks = [];
+
+          for ( let repo of forks )
+          {
+              for ( let fork of repo )
+              {
+                  if ( ! updatedForksList[ fork.name ] )
+                  {
+                      updatedForksList[ fork.name ] = []
+                  }
+
+                  updatedForksList[ fork.name ].push(
+                  {
+                      link  : fork.html_url,
+                      login : fork.owner.login
+                  } )
+
+                  if ( fork.forks_count > 0 )
+                  {
+                      nestedForks.push( fork.forks_url );
+                  }
+              }
+          }
+
+          return nestedForks.length ?
+            Promise.all( nestedForks.map( url => api( url ) ) )
+                   .then(repos => getNested( repos, updatedForksList) ) :
+            Promise.resolve( updatedForksList );
+        };
+
+        return getNested( forks, {} )
+               .then( forks => ( { forks, userList, repoList } ) )
     } )
     .then( ( { forks, userList, repoList } ) =>
     {
@@ -300,25 +338,29 @@ shouldOpenOptions().then(() =>
         let followRepos = repoList.map( repo => repo.name );
 
         document.getElementById( 'loader' ).classList.add( 'hidden' );
-        return {
-            grid: forks.reduce( ( grid, repo, index ) =>
-            {
-                grid[ followRepos[ index ] ] = repo
-                .filter( fork => followPersons.includes( fork.owner.login ) )
-                .reduce( ( grid, fork ) => Object.assign( {}, grid,
-                    {
-                        [ fork.owner.login ] : fork.html_url
-                    } ),
-                    {
-                        sociomantic : `https://github.com/${organization}/${followRepos[ index ]}`
-                    } );
 
-                return grid;
-            }, {} ),
-            followPersons
-        };
+        const grid = followRepos.reduce( ( result, repo ) =>
+        {
+            return Object.assign({}, result,
+            {
+                [ repo ] : {
+                    sociomantic : `https://github.com/${organization}/${repo}`
+                }
+            } )
+        }, {});
+
+        for ( repo of followRepos )
+        {
+            let filteredForks = forks[ repo ]
+                .filter( fork => followPersons.includes( fork.login ) )
+            for ( let fork of filteredForks ) {
+                grid[ repo ][ fork.login ] = fork.link
+            }
+        }
+
+        return { grid, followPersons };
     } )
     .then( convertData )
     .then( putCache )
     .then( putGridToUI );
-})
+} )

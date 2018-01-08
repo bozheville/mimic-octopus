@@ -3,7 +3,7 @@
 
 ## Description
 
-`v.0.0.4`
+`v.0.0.5`
 
 Extension that helps to navigate throw Sociomantic's github repositories.
 
@@ -18,6 +18,9 @@ Allows to view a grid of following users&repos, view created pull requests and P
  - add users to follow
 
 ## Features
+
+`v.0.0.5`
+ - Update forks tree composing
 
 `v.0.0.4`
 
