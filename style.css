@@ -1,7 +1,9 @@
 body
 {
     --backgroundColor : #f5f5f5;
-    width: 500px;
+    width: 450px;
+    height: 500px;
+    font-size: 14px;
 }
 
 .app-bar {
@@ -81,6 +83,31 @@ td:not(:first-child):hover::after
     background-color : var( --backgroundColor );
     content          : '\00a0';
     z-index          : -1;
+}
+
+.section
+{
+    padding : 8px 4px;
+    position: relative;
+    margin : 3px 0;
+}
+
+.app-repo-list
+{
+    min-width  : 100%;
+    overflow-x : scroll;
+}
+
+.loading-overlay:after
+{
+    position   : absolute;
+    content    : "";
+    top        : 0;
+    left       : 0;
+    bottom     : 0;
+    right      : 0;
+    background : #666;
+    opacity    : 0.6;
 }
 
 .clickable
@@ -172,4 +199,51 @@ label input[type="text"]
     z-index       : 1;
     margin        : 0 auto;
     white-space   : nowrap;
+}
+
+.options-items-list-wrapper
+{
+    max-height : 300px;
+    overflow-y : scroll;
+}
+
+ul.options-items-list
+{
+    padding    : 0;
+    columns    : 2;
+    list-style : none;
+}
+
+.editable-list-form
+{
+    position : relative;  
+}
+
+.editable-list-form .org-view-list
+{
+    display: none;
+}
+
+.editable-list-form.org-view .org-view-list
+{
+    display: block;
+}
+
+.editable-list-form .default-view-list
+{
+    display: block;
+}
+
+.editable-list-form.org-view .default-view-list
+{
+    display: none;
+}
+
+.editable-list-form .switcher:before
+{
+    content: 'Show'
+}
+.editable-list-form.org-view .switcher:before
+{
+    content: 'Hide'
 }

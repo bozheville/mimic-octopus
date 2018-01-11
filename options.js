@@ -17,34 +17,41 @@ const getRemoveButton = onRemove =>
     return removeButton;
 };
 
+
+const addItem = ( { apiMethod, checkUrl, value, storageId, itemMap } ) => {
+  return apiMethod( checkUrl + value )
+  .then( item => storage.load(storageId, [])
+      .then( itemsList =>
+      {
+          let newItem = Object.keys( itemMap ).reduce( ( result, key ) => Object.assign({}, result,
+          {
+              [ key ] : itemMap[ key ]( item )
+          } ), {} );
+
+          itemsList.push( newItem );
+
+          return storage.save(
+          {
+              [ storageId ] : itemsList
+          } );
+      } )
+  );
+}
+
 const addButtonListener = ( { button, dataInputId, checkUrl, storageId, itemMap, onClick, apiMethod } ) =>
 {
     button.addEventListener( 'click', event =>
     {
         button.disabled = 'disabled';
         let dataInput = document.getElementById( dataInputId );
-        apiMethod( checkUrl + dataInput.value )
-        .then( item => storage.load(storageId, [])
-            .then( itemsList =>
-            {
-                let newItem = Object.keys( itemMap ).reduce( (result, key) => Object.assign({}, result,
-                {
-                    [ key ] : itemMap[ key ]( item )
-                } ), {} );
+        const value = dataInput.value;
 
-                itemsList.push( newItem );
-
-                storage.save(
-                {
-                    [ storageId ] : itemsList
-                } ).then(() =>
-                {
-                    button.disabled = false;
-                    dataInput.value = '';
-                    onClick();
-                } );
-            } )
-        );
+        addItem( { apiMethod, checkUrl, value, storageId, itemMap } ).then(() =>
+        {
+            button.disabled = false;
+            dataInput.value = '';
+            onClick();
+        } );;
     } );
 };
 
@@ -66,6 +73,16 @@ const putListItem = ( { label, onRemove, placeholder, tooltip } ) =>
     placeholder.appendChild( node );
 };
 
+
+const removeItem = ( { dataKey, getUpdatedList, item, updateView } ) => {
+    return storage.load( dataKey, [] )
+    .then( itemList => storage.save( {
+        [ dataKey ] :  getUpdatedList( itemList, item )
+    } ) )
+    .then( updateView );
+};
+
+
 const putItems = ( { dataKey, getParams, getUpdatedList, updateView } ) =>
 {
     let placeHolder = document.getElementById( dataKey );
@@ -84,8 +101,7 @@ const putItems = ( { dataKey, getParams, getUpdatedList, updateView } ) =>
                     {
                         storage.save( {
                             [ dataKey ] :  getUpdatedList( itemList, item )
-                        } );
-                        updateView();
+                        } ).then( updateView );
                     }
               } )
            );
@@ -93,13 +109,15 @@ const putItems = ( { dataKey, getParams, getUpdatedList, updateView } ) =>
     } );
 };
 
+const getUpdatedUserList = ( userList, user ) => userList.filter( u => u.url !== user.url )
+
 const putUsers = () =>
 {
     putItems(
     {
         dataKey : 'userList',
         getParams: user => ( { label : user.name, tooltip : user.login } ),
-        getUpdatedList :  ( userList, user) => userList.filter( u => u.url !== user.url ),
+        getUpdatedList : getUpdatedUserList,
         updateView : () => putUsers()
     } );
 };
@@ -126,7 +144,7 @@ getUserCookie()
         {
             storage.save(
             {
-                currentUser:
+                currentUser :
                 {
                     name  : user.name,
                     login : user.login,
@@ -229,3 +247,129 @@ getUserCookie().then( userId =>
     }
 } )
 .catch( _ => _ );
+
+
+
+class MimicOctopusOptions {
+
+  constructor() {
+
+  }
+
+
+ getAllItems( uriPath ) {
+    let pageNum = 0;
+
+    const getPage = list => api( `/orgs/${uriPath}`, `page=${ ++pageNum }` )
+    .then( items => {
+      list = [ ...list, ...items ];
+      return items.length ? getPage( list ) : list;
+    } );
+
+    return getPage( [] );
+  }
+
+  getOrganizationList() {
+    addOverlay( 'usersList' );
+    return api( '/user/orgs' ).then( organizations => {
+      const orgList = {};
+
+      const promiseList = organizations.map( org => () => Promise.all( [
+        this.getAllItems( `${org.login}/repos` ),
+        this.getAllItems( `${org.login}/members` )
+      ] ).then( ( [ repos, members ] ) => {
+        orgList[ org.login ] = {
+          repos   : repos.map( ( { name, full_name } ) => ( { name, full_name } ) ),
+          members : members.map( ( { login, html_url : url } )         => ( { login, url } ) )
+        }
+      } ) );
+
+      return Promise.all( promiseList.map( p => p() ) ).then( () => orgList );
+    } );
+  }
+
+  showFullMembersList( users ) {
+    const wrapper = document.getElementById( 'org-members-list' );
+
+    storage.load( 'userList' ).then( userList => {
+        const loginList = userList.map( ( { login } ) => login );
+        for ( let user of users ) {
+            const listItem = document.createElement('li');
+            const checkbox = document.createElement('input');
+            if ( loginList.includes( user.login ) ) {
+              checkbox.checked = true;
+            }
+            checkbox.type = "checkbox";
+            checkbox.addEventListener('change', event => {
+              if ( checkbox.checked )
+              {
+                  addItem(
+                  {
+                      value     : user.login,
+                      checkUrl  : '/users/',
+                      storageId : 'userList',
+                      apiMethod : publicApi,
+                      itemMap   :
+                      {
+                          login : user => user.login,
+                          name  : user => user.name || user.login,
+                          url   : user => user.html_url
+                      }
+                  } ).then( putUsers );
+              } else {
+                  removeItem( {
+                      dataKey        : 'userList',
+                      getUpdatedList : getUpdatedUserList,
+                      item           : user,
+                      updateView     : putUsers
+                  } );
+              }
+            } );
+            listItem.appendChild( checkbox )
+            listItem.appendChild( document.createTextNode( user.login ) )
+            wrapper.appendChild( listItem );
+            removeOverlay( 'usersList' );
+        }
+    } );
+  }
+}
+
+const page = new MimicOctopusOptions();
+
+
+page.getOrganizationList().then( orgList => {
+  let keys = Object.keys( orgList );
+  const selector = document.getElementById( 'organization' );
+
+  for ( let key of keys ) {
+    const option = document.createElement( 'option' );
+    option.value = key;
+    option.appendChild( document.createTextNode( key ) );
+    selector.appendChild( option );
+  }
+
+  storage.load( 'organization' ).then( value => {
+    if ( value ) {
+      selector.value = value;
+    } else {
+      storage.save( { organization : keys[ 0 ] } )
+      selector.value = keys[ 0 ];
+    }
+
+    page.showFullMembersList( orgList[ selector.value ].members );
+  } );
+
+  selector.addEventListener( 'change', event => {
+    storage.save( { organization : event.target.value } )
+  } );
+} );
+
+
+const lists = document.getElementsByClassName('editable-list-form');
+
+for ( let list of lists ) {
+  list.getElementsByClassName( 'switcher' )[ 0 ]
+  .addEventListener( 'click', event => {
+    list.classList.toggle( 'org-view' );
+  } );
+}

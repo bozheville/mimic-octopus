@@ -1,4 +1,4 @@
-const organization = 'sociomantic';
+// const organization = 'sociomantic';
 
 
 const shouldOpenOptions = () => Promise.all( [ getUserCookie(), getAccessToken() ] )
@@ -19,6 +19,36 @@ const getFullUserList = () => Promise.all( [
         } ];
 } );
 
+
+
+// class MimicOctopusPopup {
+//
+//   static DOMItems = {};
+//
+//   constructor() {
+//
+//   }
+//
+//   static addOverlay = id => {
+//     if ( !MimicOctopusOptions[ id ] ) {
+//       MimicOctopusOptions[ id ] = document.getElementById( id );
+//     }
+//
+//     MimicOctopusOptions[ id ].classList.add('loading-overlay');
+//   }
+//
+//   static removeOverlay = id => {
+//     if ( !MimicOctopusOptions[ id ] ) {
+//       MimicOctopusOptions[ id ] = document.getElementById( id );
+//     }
+//
+//     MimicOctopusOptions[ id ].classList.remove('loading-overlay');
+//   }
+//
+// }
+
+
+
 let IS_COMMAND = false;
 let IS_CTRL = false;
 
@@ -37,7 +67,10 @@ window.addEventListener( 'keyup', event =>
     if ( event.keyCode === CTRL_KEY_CODE ) IS_CTRL    = false;
 } );
 
-document.getElementById( 'org-name' ).innerHTML = organization;
+storage.load('organization').then(organization => {
+  document.getElementById( 'org-name' ).innerHTML = organization;
+} );
+
 
 
 const addLinkListener = (item, url) =>
@@ -201,23 +234,24 @@ if (grid)
     putGridToUI( JSON.parse( grid ) );
 }
 
-
+addOverlay("app-repo-list");
 shouldOpenOptions().then( () =>
 {
     chrome.runtime.openOptionsPage();
 } )
 .catch( () =>
 {
-
-    storage.load( 'repoList' ).then( ( repoList = [] ) => Promise.all(
+    addOverlay("section-my-pr");
+    addOverlay("section-review");
+    storage.load( ['repoList', 'organization'] ).then( ( { repoList = [], organization} ) => Promise.all(
         repoList
         .map ( repo => `/repos/${organization}/${repo.name}/pulls` )
         .map ( link => api( link ) )
     ) )
     .then( prsByRepo =>
     {
-        document.getElementById('loader-my-prs').classList.add('hidden');
-        document.getElementById('loader-review-prs').classList.add('hidden');
+        removeOverlay("section-my-pr");
+        removeOverlay("section-review");
         let myPRs = [];
         let reviewPRs = [];
 
@@ -251,11 +285,12 @@ shouldOpenOptions().then( () =>
         } );
     } );
 
-
-    api(`/orgs/${organization}/issues`)
+    addOverlay("section-issues");
+    storage.load( 'organization' ).then( organization => api(`/orgs/${organization}/issues`)
     .then( issuesList =>
     {
-        document.getElementById('loader-my-issues').classList.add('hidden');
+        removeOverlay("section-issues");
+        // document.getElementById('loader-my-issues').classList.add('hidden');
         let container = document.getElementById('app-my-issues');
 
         if ( issuesList.length )
@@ -280,7 +315,7 @@ shouldOpenOptions().then( () =>
             placeholder.classList.add( 'text-italic' );
             container.appendChild( placeholder );
         }
-    } );
+    } ) );
 
 
     Promise.all([
@@ -290,9 +325,9 @@ shouldOpenOptions().then( () =>
     ] )
     .then( ( [ currentUser, repoList = [], userList = [] ] ) =>
     {
-        return Promise.all(
+        return storage.load( 'organization' ).then( organization => Promise.all(
             repoList.map ( repo => api( `/repos/${organization}/${repo.name}/forks` ) )
-        )
+        ) )
         .then( forks => ( { forks, userList, repoList } ) )
     } )
     .then( ( { forks, userList, repoList } ) =>
@@ -337,30 +372,32 @@ shouldOpenOptions().then( () =>
         let followPersons = userList.map( user => user.login);
         let followRepos = repoList.map( repo => repo.name );
 
-        document.getElementById( 'loader' ).classList.add( 'hidden' );
+        removeOverlay("app-repo-list");
 
-        const grid = followRepos.reduce( ( result, repo ) =>
-        {
-            return Object.assign({}, result,
-            {
-                [ repo ] : {
-                    sociomantic : `https://github.com/${organization}/${repo}`
-                }
-            } )
-        }, {});
+        return storage.load( 'organization' ).then( organization => {
+          const grid = followRepos.reduce( ( result, repo ) =>
+          {
+              return Object.assign({}, result,
+              {
+                  [ repo ] : {
+                      sociomantic : `https://github.com/${organization}/${repo}`
+                  }
+              } )
+          }, {});
 
-        for ( repo of followRepos )
-        {
-            let filteredForks = forks[ repo ]
-                .filter( fork => followPersons.includes( fork.login ) )
-            for ( let fork of filteredForks ) {
-                grid[ repo ][ fork.login ] = fork.link
-            }
-        }
+          for ( repo of followRepos )
+          {
+              let filteredForks = forks[ repo ]
+                  .filter( fork => followPersons.includes( fork.login ) )
+              for ( let fork of filteredForks ) {
+                  grid[ repo ][ fork.login ] = fork.link
+              }
+          }
 
-        return { grid, followPersons };
+          return { grid, followPersons };
+        } );
     } )
     .then( convertData )
     .then( putCache )
     .then( putGridToUI );
-} )
+} );

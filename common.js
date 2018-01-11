@@ -37,12 +37,12 @@ const getAccessToken = () => storage.load('access_token').then( token => {
      return token || Promise.reject( "no access token provided" );
 } );
 
-const api = link =>
+const api = (link, additionalParams ) =>
 {
     return getAccessToken().then( token =>
     {
         const url = link.indexOf('http') !== -1 ? link : `https://api.github.com${link}`
-        return fetch( `${url}?access_token=${token}` )
+        return fetch( `${url}?access_token=${token}${additionalParams ? '&' + additionalParams : '' }` )
         .then( response => response.json() );
     } )
     .catch(err =>
@@ -84,3 +84,12 @@ const getUserCookie = () => new Promise( ( resolve, reject ) =>
 
     } );
 } );
+
+
+const addOverlay = id => {
+    document.getElementById( id ).classList.add('loading-overlay');
+}
+
+const removeOverlay = id => {
+    document.getElementById( id ).classList.remove('loading-overlay');
+}

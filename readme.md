@@ -3,21 +3,37 @@
 
 ## Description
 
-`v.0.0.5`
+`v.0.1.0`
 
-Extension that helps to navigate throw Sociomantic's github repositories.
+Extension that helps to use Github.
 
-Allows to view a grid of following users&repos, view created pull requests and PRs to review. Allows to see assigned issues
+Allows:
+ - to view a grid of following users&repos
+ - to view created pull requests
+ - to view pull requests that require your review
+ - to see assigned issues
+
+Settings:
+ - you need to add generated token
+ - you can choose organization,
+ - you can see full list of org's members and repos
 
 
-## Settings
-
- - paste the token
-   - get a token
- - add some repos
- - add users to follow
+## Bootstrap
+ 1. [Generate access token](https://github.com/settings/tokens/new)
+ 2. Paste token to extension options
+ 3. Wait while all data is loaded via API
+ 4. Choose org
+ 5. _(optional)_ Add users to follow
+ 6. _(optional)_ Add repos to follow
 
 ## Features
+
+`v.0.1.0`
+ - Load user's organizations via API
+ - Load all org's repos & members list
+ - Do not open options page if token is set
+ - Add loading overlays
 
 `v.0.0.5`
  - Update forks tree composing
@@ -69,10 +85,8 @@ Allows to view a grid of following users&repos, view created pull requests and P
 ## TODO
 
 - Features
-  - On a separate tab show all org repos and allow to mark them, using checkboxes
   - On a separate tab show all org users and allow to mark them, using checkboxes
   - Notifications
-    - Allow user to change update period
     - Allow user to switch off notifications
       - Any notifications
       - Only for pr/issue

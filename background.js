@@ -123,8 +123,6 @@ let checkIssuesNotifications = () => api( `/orgs/${organization}/issues` )
 } )
 .catch( _ => {} );
 
-
-
 const updateUserInfo = () =>
 {
   return getUserCookie()
@@ -137,11 +135,15 @@ const updateUserInfo = () =>
       }
   } )
   .catch( _ => _ );
-}
+};
 
-updateUserInfo().then(() => {
-  chrome.tabs.create({ 'url': 'chrome://extensions/?options=' + chrome.runtime.id });
-});
+updateUserInfo()
+.then( () => getAccessToken().then( _ => _ ).catch( _ => {
+               chrome.tabs.create( {
+                 url : `chrome://extensions/?options=${chrome.runtime.id}`
+               } );
+             } )
+);
 
 setInterval( () =>
 {

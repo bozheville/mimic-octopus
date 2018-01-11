@@ -7,27 +7,26 @@
     </head>
     <body>
         <div class="app-bar">Mimic octopus: <span id="org-name"></span></div>
-        <div class="header">
-            <img class="loading-progress" id="loader" src="./img/load.gif" alt="">
-        </div>
+
         <div id="app-repo-empty" class="hidden empty-repo-list align-center">
             <h3>You don't have any repositories to follow</h3>
             <a class="clickable button">Add the first one</a>
         </div>
-        <div id="app-repo-list"></div>
-        <div>
+
+        <div id="app-repo-list" class="section app-repo-list"></div>
+
+        <div id="section-my-pr" class="section">
             <h3>My pull requests</h3>
-            <img class="loading-progress" id="loader-my-prs" src="./img/load.gif" alt="">
             <div id="app-my-prs"></div>
         </div>
-        <div>
+
+        <div id="section-review" class="section">
             <h3>Pull requests to review</h3>
-            <img class="loading-progress" id="loader-review-prs" src="./img/load.gif" alt="">
             <div id="app-review-prs"></div>
         </div>
-        <div class="">
+
+        <div id="section-issues" class="section">
             <h3>My issues</h3>
-            <img class="loading-progress" id="loader-my-issues" src="./img/load.gif" alt="">
             <div id="app-my-issues"></div>
         </div>
 
