@@ -1,3 +1,7 @@
+
+
+
+
 const getRemoveButton = onRemove =>
 {
     let removeButton = document.createElement( 'span' );
@@ -103,8 +107,7 @@ const putItems = ( { dataKey, getParams, getUpdatedList, updateView } ) =>
                             [ dataKey ] :  getUpdatedList( itemList, item )
                         } ).then( updateView );
                     }
-              } )
-           );
+              } ) );
         }
     } );
 };
@@ -133,28 +136,27 @@ const putRepos = () =>
     } );
 };
 
-
-getUserCookie()
-.then( userId =>
-{
-    if ( userId )
-    {
-        api( `/users/${userId}` )
-        .then( user =>
-        {
-            storage.save(
-            {
-                currentUser :
-                {
-                    name  : user.name,
-                    login : user.login,
-                    url   : user.html_url
-                }
-            } );
-        } );
-    }
-} )
-.catch( _ => _ );
+// getUserCookie()
+// .then( userId =>
+// {
+//     if ( userId )
+//     {
+//         api( `/users/${userId}` )
+//         .then( user =>
+//         {
+//             storage.save(
+//             {
+//                 currentUser :
+//                 {
+//                     name  : user.name,
+//                     login : user.login,
+//                     url   : user.html_url
+//                 }
+//             } );
+//         } );
+//     }
+// } )
+// .catch( _ => _ );
 
 getUserCookie().then( userId =>
 {
@@ -248,39 +250,71 @@ getUserCookie().then( userId =>
 } )
 .catch( _ => _ );
 
-
-
 class MimicOctopusOptions {
 
-  constructor() {
+  constructor()
+  {
+    const lists = document.getElementsByClassName( 'editable-list-form' );
 
+    for ( let list of lists )
+    {
+      list.getElementsByClassName( 'switcher' )[ 0 ]
+      .addEventListener( 'click', event =>
+      {
+        list.classList.toggle( 'org-view' );
+      } );
+    }
   }
 
+  getMyInfo()
+  {
+    return getUserCookie()
+    .then( userId => api( `/users/${userId}` ) )
+    .then( user => storage.save(
+    {
+      currentUser :
+      {
+        name  : user.name,
+        login : user.login,
+        url   : user.html_url
+      }
+    } ) )
+    .catch( _ => _ );
+  }
 
- getAllItems( uriPath ) {
+  getAllItems( uriPath )
+  {
     let pageNum = 0;
 
     const getPage = list => api( `/orgs/${uriPath}`, `page=${ ++pageNum }` )
-    .then( items => {
+    .then( items =>
+    {
       list = [ ...list, ...items ];
+
       return items.length ? getPage( list ) : list;
     } );
 
     return getPage( [] );
   }
 
-  getOrganizationList() {
+  getOrganizationList()
+  {
     addOverlay( 'usersList' );
-    return api( '/user/orgs' ).then( organizations => {
+    return api( '/user/orgs' ).then( organizations =>
+    {
       const orgList = {};
 
-      const promiseList = organizations.map( org => () => Promise.all( [
+      const promiseList = organizations.map( org => () => Promise.all(
+      [
         this.getAllItems( `${org.login}/repos` ),
         this.getAllItems( `${org.login}/members` )
-      ] ).then( ( [ repos, members ] ) => {
-        orgList[ org.login ] = {
+      ] )
+      .then( ( [ repos, members ] ) =>
+      {
+        orgList[ org.login ] =
+        {
           repos   : repos.map( ( { name, full_name } ) => ( { name, full_name } ) ),
-          members : members.map( ( { login, html_url : url } )         => ( { login, url } ) )
+          members : members.map( ( { login, html_url : url } ) => ( { login, url } ) )
         }
       } ) );
 
@@ -288,88 +322,107 @@ class MimicOctopusOptions {
     } );
   }
 
-  showFullMembersList( users ) {
+  showFullMembersList( users )
+  {
     const wrapper = document.getElementById( 'org-members-list' );
 
-    storage.load( 'userList' ).then( userList => {
-        const loginList = userList.map( ( { login } ) => login );
-        for ( let user of users ) {
-            const listItem = document.createElement('li');
-            const checkbox = document.createElement('input');
-            if ( loginList.includes( user.login ) ) {
-              checkbox.checked = true;
-            }
-            checkbox.type = "checkbox";
-            checkbox.addEventListener('change', event => {
-              if ( checkbox.checked )
-              {
-                  addItem(
-                  {
-                      value     : user.login,
-                      checkUrl  : '/users/',
-                      storageId : 'userList',
-                      apiMethod : publicApi,
-                      itemMap   :
-                      {
-                          login : user => user.login,
-                          name  : user => user.name || user.login,
-                          url   : user => user.html_url
-                      }
-                  } ).then( putUsers );
-              } else {
-                  removeItem( {
-                      dataKey        : 'userList',
-                      getUpdatedList : getUpdatedUserList,
-                      item           : user,
-                      updateView     : putUsers
-                  } );
-              }
-            } );
-            listItem.appendChild( checkbox )
-            listItem.appendChild( document.createTextNode( user.login ) )
-            wrapper.appendChild( listItem );
-            removeOverlay( 'usersList' );
+    storage.load( 'userList' ).then( userList =>
+    {
+      const loginList = userList.map( ( { login } ) => login );
+
+      for ( let user of users )
+      {
+        const listItem = document.createElement( 'li' );
+        const checkbox = document.createElement( 'input' );
+
+        if ( loginList.includes( user.login ) )
+        {
+          checkbox.checked = true;
         }
+
+        checkbox.type = 'checkbox';
+        checkbox.addEventListener( 'change', event =>
+        {
+          if ( checkbox.checked )
+          {
+            addItem(
+            {
+              value     : user.login,
+              checkUrl  : '/users/',
+              storageId : 'userList',
+              apiMethod : publicApi,
+              itemMap   :
+              {
+                login : user => user.login,
+                name  : user => user.name || user.login,
+                url   : user => user.html_url
+              }
+            } ).then( putUsers );
+          } else {
+            removeItem(
+            {
+              dataKey        : 'userList',
+              getUpdatedList : getUpdatedUserList,
+              item           : user,
+              updateView     : putUsers
+            } );
+          }
+        } );
+
+        listItem.appendChild( checkbox )
+        listItem.appendChild( document.createTextNode( user.login ) )
+        wrapper.appendChild( listItem );
+        removeOverlay( 'usersList' );
+      }
     } );
   }
+
+  putMembersList( orgList )
+  {
+    let keys = Object.keys( orgList );
+    const selector = document.getElementById( 'organization' );
+
+    for ( let key of keys )
+    {
+      const option = document.createElement( 'option' );
+      option.value = key;
+      option.appendChild( document.createTextNode( key ) );
+      selector.appendChild( option );
+    }
+
+    storage.load( 'organization' )
+    .then( value =>
+    {
+      if ( value )
+      {
+        selector.value = value;
+        return Promise.resolve();
+      } else {
+        selector.value = keys[ 0 ];
+        return storage.save( { organization : keys[ 0 ] } )
+      }
+    } )
+    .then( () =>
+    {
+      return page.showFullMembersList( orgList[ selector.value ].members );
+    } )
+    .then( () =>
+    {
+      selector.addEventListener( 'change', event =>
+      {
+        storage.save( { organization : event.target.value } )
+      } );
+    });
+  }
+
+
 }
 
 const page = new MimicOctopusOptions();
 
+page.getMyInfo();
 
-page.getOrganizationList().then( orgList => {
-  let keys = Object.keys( orgList );
-  const selector = document.getElementById( 'organization' );
-
-  for ( let key of keys ) {
-    const option = document.createElement( 'option' );
-    option.value = key;
-    option.appendChild( document.createTextNode( key ) );
-    selector.appendChild( option );
-  }
-
-  storage.load( 'organization' ).then( value => {
-    if ( value ) {
-      selector.value = value;
-    } else {
-      storage.save( { organization : keys[ 0 ] } )
-      selector.value = keys[ 0 ];
-    }
-
-    page.showFullMembersList( orgList[ selector.value ].members );
-  } );
-
-  selector.addEventListener( 'change', event => {
-    storage.save( { organization : event.target.value } )
-  } );
+page.getOrganizationList().then( orgList =>
+{
+  page.putMembersList( orgList );
 } );
-
-
-const lists = document.getElementsByClassName('editable-list-form');
-
-for ( let list of lists ) {
-  list.getElementsByClassName( 'switcher' )[ 0 ]
-  .addEventListener( 'click', event => {
-    list.classList.toggle( 'org-view' );
-  } );
-}
