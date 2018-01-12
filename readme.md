@@ -5,7 +5,11 @@
 
 `v.0.1.0`
 
-Extension that helps to use Github.
+Chrome extension that helps to use Github.
+
+Explore assigned issues, open PRs, org's repos && users
+
+[Add to chrome](https://chrome.google.com/webstore/detail/mimic-octopus/eelndpcfojejbbklmbejhkjnfbcgoodo?hl=en-GB)
 
 Allows:
  - to view a grid of following users&repos

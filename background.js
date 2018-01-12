@@ -148,7 +148,7 @@ updateUserInfo()
 setInterval( () =>
 {
   updateUserInfo();
-}, 30000 );
+}, 5 * 60000 );
 
 chrome.notifications.onClicked.addListener( id =>
 {
