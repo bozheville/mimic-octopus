@@ -34,51 +34,59 @@
 
             </label>
             <div id="followingLists" class="disabled">
-                <div id="usersList" class="editable-list-form">
-                    <h3>
-                      Follow users
-                      <div class="switcher button">
-                        full org list
-                      </div>
-                    </h3>
-
-                    <div class="options-items-list-wrapper org-view-list">
-                      <ul id="org-members-list" class="options-items-list"></ul>
+              <div id="usersList" class="editable-list-form section">
+                  <h3>
+                    Follow users
+                    <div class="switcher button">
+                      full org list
                     </div>
-                    <div class="default-view-list">
-                        <ul id="userList" class="hightlight-rows"></ul>
-                        <label for="newUser">
-                            <input
-                                type        = "text"
-                                id          = "newUser"
-                                placeholder = "Add user (user login)" />
-                            <button
-                                type = "button"
-                                id   = "addUser" >
+                  </h3>
 
-                                Add user
-                            </button>
-                        </label>
-                    </div>
+                  <div class="options-items-list-wrapper org-view-list">
+                    <ul id="org-members-list" class="options-items-list"></ul>
+                  </div>
+                  <div class="default-view-list">
+                      <ul id="userList" class="hightlight-rows"></ul>
+                      <label for="newUser">
+                          <input
+                              type        = "text"
+                              id          = "newUser"
+                              placeholder = "Add user (user login)" />
+                          <button
+                              type = "button"
+                              id   = "addUser" >
+
+                              Add user
+                          </button>
+                      </label>
+                  </div>
                 </div>
 
+                <div id="reposList" class="editable-list-form">
+                  <h3>
+                    Follow repos
+                    <div class="switcher button">
+                      full org list
+                    </div>
+                  </h3>
+                  <div class="options-items-list-wrapper org-view-list">
+                    <ul id="org-repos-list" class="options-items-list"></ul>
+                  </div>
+                  <div class="default-view-list">
+                      <ul id="repoList" class="hightlight-rows"></ul>
+                      <label for="newRepo">
+                          <input
+                              type        = "text"
+                              id          = "newRepo"
+                              placeholder = "Add repo (repo name)" />
+                          <button
+                              type = "button"
+                              id   = "addRepo" >
 
-
-                <h3>Follow repos</h3>
-                <div>
-                    <ul id="repoList" class="hightlight-rows"></ul>
-                    <label for="newRepo">
-                        <input
-                            type        = "text"
-                            id          = "newRepo"
-                            placeholder = "Add repo (repo name)" />
-                        <button
-                            type = "button"
-                            id   = "addRepo" >
-
-                            Add repository
-                        </button>
-                    </label>
+                              Add repository
+                          </button>
+                      </label>
+                  </div>
                 </div>
             </div>
         </div>

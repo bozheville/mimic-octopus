@@ -89,7 +89,6 @@ Settings:
 ## TODO
 
 - Features
-  - On a separate tab show all org users and allow to mark them, using checkboxes
   - Notifications
     - Allow user to switch off notifications
       - Any notifications
