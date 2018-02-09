@@ -1,9 +1,9 @@
-# Sociomantic github extention
+# Chrome extension to explore issues and PRs
 
 
 ## Description
 
-`v.0.1.0`
+`v.0.1.2`
 
 Chrome extension that helps to use Github.
 
@@ -33,6 +33,10 @@ Settings:
 
 ## Features
 
+`v.0.1.2`
+ - search the full forks tree, not only top-level
+ - fix of list loading on first run
+ 
 `v.0.1.0`
  - Load user's organizations via API
  - Load all org's repos & members list

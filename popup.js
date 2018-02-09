@@ -178,6 +178,8 @@ const putPRsToUI = ( cotainerId, prList, emptyListText ) =>
     if( prList.length )
     {
         let list = document.createElement( 'ul' );
+        list.classList.add( 'popup-items-list' );
+
         for ( let pr of prList )
         {
             let item = document.createElement( 'li' );
@@ -296,6 +298,7 @@ shouldOpenOptions().then( () =>
         if ( issuesList.length )
         {
             let list = document.createElement('ul');
+            list.classList.add( 'popup-items-list' );
             for ( let issue of issuesList )
             {
                 let item = document.createElement('li');

@@ -1,18 +1,20 @@
 body
 {
     --backgroundColor : #f5f5f5;
-    width: 450px;
-    height: 500px;
-    font-size: 14px;
+    width             : 450px;
+    height            : 500px;
+    font-size         : 14px;
+    padding           : 0;
+    margin            : 0;
+    overflow-y        : scroll;
 }
 
 .app-bar {
-    height: 28px;
-    background-color: #444;
-    margin: -8px;
-    color: #fff;
-    padding: 4px;
-    font-size: 18px;
+    height           : 28px;
+    background-color : #444;
+    color            : #fff;
+    padding          : 4px;
+    font-size        : 18px;
 }
 
 .empty-repo-list
@@ -90,7 +92,6 @@ td:not(:first-child):hover::after
 {
     padding : 8px 4px;
     position: relative;
-    margin : 3px 0;
 }
 
 .app-repo-list
@@ -151,16 +152,16 @@ td:not(:first-child):hover::after
 
 ul.hightlight-rows li
 {
-    padding: 4px;
-    display: flex;
-    justify-content: space-between;
+    padding         : 4px;
+    display         : flex;
+    justify-content : space-between;
 
     font-size: 14px;
 }
 
 ul.hightlight-rows li:hover
 {
-    background-color: #f3f3f3;
+    background-color : #f3f3f3;
 }
 
 .loading-progress
@@ -208,6 +209,20 @@ label input[type="text"]
     overflow-y : scroll;
 }
 
+ul.popup-items-list
+{
+    padding : 0;
+    margin  : 0;
+}
+
+ul.popup-items-list li
+{
+    list-style    : none;
+    border-left   : 3px solid #bebebe;
+    padding-left  : 8px;
+    margin-bottom : 4px;
+}
+
 ul.options-items-list
 {
     padding    : 0;
@@ -222,29 +237,44 @@ ul.options-items-list
 
 .editable-list-form .org-view-list
 {
-    display: none;
+    display : none;
 }
 
 .editable-list-form.org-view .org-view-list
 {
-    display: block;
+    display : block;
 }
 
 .editable-list-form .default-view-list
 {
-    display: block;
+    display : block;
 }
 
 .editable-list-form.org-view .default-view-list
 {
-    display: none;
+    display : none;
 }
 
 .editable-list-form .switcher:before
 {
-    content: 'Show'
+    content : 'Show'
 }
 .editable-list-form.org-view .switcher:before
 {
-    content: 'Hide'
+    content : 'Hide'
+}
+
+.section#section-review
+{
+    background-color : #E6FFF0;
+}
+
+.section#section-my-pr
+{
+    background-color : #FFE6DE;
+}
+
+.section#section-issues
+{
+    background-color : #D1F0FF;
 }
