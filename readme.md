@@ -3,7 +3,7 @@
 
 ## Description
 
-`v.0.1.2`
+`v.0.1.3`
 
 Chrome extension that helps to use Github.
 
@@ -33,10 +33,13 @@ Settings:
 
 ## Features
 
+`v.0.1.3`
+ - make org name totally flexible (not more hard coded org name)
+
 `v.0.1.2`
  - search the full forks tree, not only top-level
  - fix of list loading on first run
- 
+
 `v.0.1.0`
  - Load user's organizations via API
  - Load all org's repos & members list
