@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title></title>
-        <link rel="stylesheet" href="style.css">
+      <meta charset="utf-8">
+      <title></title>
+      <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
+      <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div class="app-bar">Mimic octopus: <span id="org-name"></span></div>
-
+      <div class="app-bar">
+        Mimic octopus: <span id="org-name"></span>
+      </div>
+      <div class="content-wrapper">
         <div id="app-repo-empty" class="hidden empty-repo-list align-center">
-            <h3>You don't have any repositories to follow</h3>
-            <a class="clickable button">Add the first one</a>
+          <h3>You don't have any repositories to follow</h3>
+          <a class="clickable button">Add the first one</a>
         </div>
 
         <div id="app-repo-list" class="section app-repo-list"></div>
 
         <div id="section-my-pr" class="section">
-            <h3>My pull requests</h3>
-            <div id="app-my-prs"></div>
+          <h3>My pull requests</h3>
+          <div id="app-my-prs"></div>
         </div>
 
         <div id="section-review" class="section">
-            <h3>Pull requests to review</h3>
-            <div id="app-review-prs"></div>
+          <h3>Pull requests to review</h3>
+          <div id="app-review-prs"></div>
         </div>
 
         <div id="section-issues" class="section">
-            <h3>My issues</h3>
-            <div id="app-my-issues"></div>
+          <h3>My issues</h3>
+          <div id="app-my-issues"></div>
         </div>
+      </div>
 
-        <script type="text/javascript" src="common.js"></script>
-        <script type="text/javascript" src="popup.js"></script>
+      <script type="text/javascript" src="common.js"></script>
+      <script type="text/javascript" src="popup.js"></script>
     </body>
 </html>

@@ -7,6 +7,12 @@ body
     padding           : 0;
     margin            : 0;
     overflow-y        : scroll;
+    font-family       : 'Source Sans Pro', sans-serif;
+}
+
+.content-wrapper
+{
+    margin : 0 8px;
 }
 
 .app-bar {
@@ -55,6 +61,11 @@ body
     text-align  : left;
 }
 
+h3
+{
+  margin : 4px 0 6px;
+}
+
 table
 {
     border-spacing  : 0;
@@ -96,7 +107,7 @@ td:not(:first-child):hover::after
 
 .app-repo-list
 {
-    min-width  : 100%;
+    min-width: calc(100% - 16px);
     overflow-x : scroll;
 }
 
@@ -264,17 +275,14 @@ ul.options-items-list
     content : 'Hide'
 }
 
-.section#section-review
+.section
 {
-    background-color : #E6FFF0;
+    padding-bottom : 6px;
+    border-bottom: 1px solid #888;
 }
 
-.section#section-my-pr
+.section:last-of-type
 {
-    background-color : #FFE6DE;
-}
-
-.section#section-issues
-{
-    background-color : #D1F0FF;
+  padding-bottom: inherit;
+  border-bottom: none;
 }

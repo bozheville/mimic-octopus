@@ -3,7 +3,7 @@
 
 ## Description
 
-`v.0.1.3`
+`v.0.1.4`
 
 Chrome extension that helps to use Github.
 
@@ -32,6 +32,9 @@ Settings:
  6. _(optional)_ Add repos to follow
 
 ## Features
+
+`v.0.1.4`
+ - Just some visual updates
 
 `v.0.1.3`
  - make org name totally flexible (not more hard coded org name)
