@@ -1,4 +1,3 @@
-const organization = 'sociomantic';
 let openPRsToReviewList = [];
 let openIssuesList = [];
 
@@ -38,8 +37,11 @@ getUserCookie().then( userId =>
 
 let urlMapping = {};
 
-let checkNotifications = () => storage.load( 'repoList' )
-.then( ( repoList = [] ) => Promise.all(
+let checkNotifications = () => Promise.all( [
+  storage.load( 'repoList' ),
+  storage.load( 'organization' )
+] )
+.then( ( [ repoList = [], organization ] ) => Promise.all(
     repoList
     .map ( repo => `/repos/${organization}/${repo.name}/pulls` )
     .map ( link => api( link ) )
@@ -96,7 +98,8 @@ let checkNotifications = () => storage.load( 'repoList' )
 .catch( _ => {} );
 
 
-let checkIssuesNotifications = () => api( `/orgs/${organization}/issues` )
+let checkIssuesNotifications = () => storage.load( 'organization' )
+.then( organization => api( `/orgs/${organization}/issues` ) )
 .then( issuesList =>
 {
     counters.issues = issuesList.length;

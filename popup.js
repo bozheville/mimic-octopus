@@ -1,5 +1,3 @@
-// const organization = 'sociomantic';
-
 
 const shouldOpenOptions = () => Promise.all( [ getUserCookie(), getAccessToken() ] )
                                 .then(  () => Promise.reject('reject') )
@@ -7,15 +5,16 @@ const shouldOpenOptions = () => Promise.all( [ getUserCookie(), getAccessToken()
 
 const getFullUserList = () => Promise.all( [
     storage.load( 'currentUser' ),
-    storage.load( 'userList' )
-] ).then( ( [ currentUser, userList = [] ] ) =>
+    storage.load( 'userList' ),
+    storage.load( 'organization' ),
+] ).then( ( [ currentUser, userList = [], organization ] ) =>
 {
     return [
         ...userList,
         currentUser,
         {
-            login : 'sociomantic',
-            name  : 'Sociomantic'
+            login : organization,
+            name  : organization
         } ];
 } );
 
@@ -380,12 +379,12 @@ shouldOpenOptions().then( () =>
         return storage.load( 'organization' ).then( organization => {
           const grid = followRepos.reduce( ( result, repo ) =>
           {
-              return Object.assign({}, result,
-              {
-                  [ repo ] : {
-                      sociomantic : `https://github.com/${organization}/${repo}`
-                  }
-              } )
+            return Object.assign( {}, result,
+            {
+              [ repo ] : {
+                [ organization ] : `https://github.com/${organization}/${repo}`
+              }
+            } )
           }, {});
 
           for ( repo of followRepos )
