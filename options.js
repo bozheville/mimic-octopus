@@ -359,7 +359,7 @@ class MimicOctopusOptions {
         const listItem = document.createElement( 'li' );
         const checkbox = document.createElement( 'input' );
 
-        if ( isSetValue( itemList, getItemValue( item ) ) ) {
+        if (itemList && isSetValue( itemList, getItemValue( item ) ) ) {
           checkbox.checked = true;
         }
 
