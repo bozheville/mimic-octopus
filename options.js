@@ -144,7 +144,7 @@ getUserCookie().then( userId =>
         putRepos();
 
 
-        storage.load('currentUser').then(user =>
+        storage.load( 'currentUser' ).then(user =>
         {
           const container = document.getElementById('logged-in-as');
           let link = document.createElement('a');
@@ -181,9 +181,12 @@ getUserCookie().then( userId =>
                 } );
             } );
 
-            return accessToken;
+            return Promise.all( [
+              storage.load( 'organization' ),
+              accessToken
+            ] );
         } )
-        .then( accessToken =>
+        .then( ( [ organization, accessToken ] ) =>
         {
             if ( accessToken )
             {
@@ -210,7 +213,7 @@ getUserCookie().then( userId =>
             {
                 button      : document.getElementById( 'addRepo' ),
                 dataInputId : 'newRepo',
-                checkUrl    : '/repos/sociomantic/',
+                checkUrl    : `/repos/${organization}/`,
                 storageId   : 'repoList',
                 onClick     : putRepos,
                 apiMethod   : api,
