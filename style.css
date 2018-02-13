@@ -29,9 +29,12 @@ body
     width            : calc(100% - 48px);
     margin           : 12px;
     padding          : 12px;
-    border           : 1px solid indianred;
-    background-color : #ffd589;
-    border-radius    : 5px;
+    /* border           : 1px solid indianred;
+    background-color : #ffd589; */
+    border: 1px solid #dedede;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0px 4px 11px -3px;
 }
 
 .align-center
@@ -52,7 +55,18 @@ body
 
 .button:hover
 {
-    background-color : #eee;
+  background-color : #eee;
+}
+
+.button.primary {
+  background-color : #3CBBB1;
+  color            : #fff;
+}
+
+.button.primary:hover
+{
+  background-color : #3CBBB1;
+  color            : #fbfbfb;
 }
 
 .table-row-name

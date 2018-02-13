@@ -98,6 +98,8 @@ const putGridToUI = grid =>
     if ( !grid.length || !grid[0][1] )
     {
         emptyListContainer.classList.remove('hidden');
+        document.getElementById('section-my-pr').classList.add('hidden');
+        document.getElementById('section-review').classList.add('hidden');
         let link = emptyListContainer.getElementsByTagName('a')[0];
         link.addEventListener('click', () =>
         {
@@ -105,6 +107,8 @@ const putGridToUI = grid =>
         } );
     } else {
         emptyListContainer.classList.add('hidden');
+        document.getElementById('section-my-pr').classList.remove('hidden');
+        document.getElementById('section-review').classList.remove('hidden');
         getFullUserList().then( userList =>
         {
             let userMap = userList.reduce( ( map, user ) => Object.assign({}, map,
