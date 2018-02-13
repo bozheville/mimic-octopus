@@ -1,6 +1,4 @@
-
-
-
+const colors = new Colors();
 
 const getRemoveButton = onRemove =>
 {
@@ -127,7 +125,7 @@ const putRepos = () =>
     putItems(
     {
         dataKey : 'repoList',
-        getParams: repo => ( { label : repo.name, } ),
+        getParams: repo => ( { label : repo.name } ),
         getUpdatedList :  getUpdatedList,
         updateView : () => putRepos()
     } );
@@ -220,7 +218,8 @@ getUserCookie().then( userId =>
                 itemMap     :
                 {
                     name : repo => repo.name,
-                    url  : repo => repo.html_url
+                    url  : repo => repo.html_url,
+                    colorIndex: repo => colors.getColorIndex()
                 }
             } );
         } );
@@ -358,6 +357,11 @@ class MimicOctopusOptions {
     const wrapper = document.getElementById( elementId );
 
     return storage.load( storageId ).then( itemList => {
+
+      if ( storageId === 'repoList' ) {
+        colors.setIndex()
+      }
+
       for ( let item of items ) {
         const listItem = document.createElement( 'li' );
         const checkbox = document.createElement( 'input' );
@@ -431,8 +435,9 @@ page.getOrganizationList().then( orgList => {
       checkUrl       : `/repos/${org}/`,
       storageId      : 'repoList',
       itemMap        : {
-        name : repo => repo.name,
-        url  : repo => repo.html_url
+        name       : repo => repo.name,
+        url        : repo => repo.html_url,
+        colorIndex : repo => colors.getColorIndex()
       },
       getUpdatedList : getUpdatedList,
       elementId      : 'org-repos-list',

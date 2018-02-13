@@ -182,8 +182,18 @@ const putPRsToUI = ( cotainerId, prList, emptyListText ) =>
         for ( let pr of prList )
         {
             let item = document.createElement( 'li' );
+
             item.classList.add( 'clickable' );
-            let text = document.createTextNode( `${pr.repo}: ${pr.title} (${pr.state})` );
+            item.setAttribute( 'title', pr.title );
+
+            const repoWrapper = document.createElement( 'div' );
+            repoWrapper.classList.add( 'repo-name-wrapper' );
+            repoWrapper.classList.add( `colors-bg-${pr.repo.color}` );
+
+            repoWrapper.appendChild( document.createTextNode( pr.repo.name ) )
+
+            let text = document.createTextNode( `${pr.title} (${pr.state})` );
+            item.appendChild( repoWrapper );
             item.appendChild( text );
             addLinkListener( item, pr.url );
             list.appendChild( item );
@@ -230,8 +240,7 @@ const putCache = grid =>
 };
 
 let grid = localStorage.getItem( 'grid' );
-if (grid)
-{
+if ( grid ) {
     putGridToUI( JSON.parse( grid ) );
 }
 
@@ -244,13 +253,22 @@ shouldOpenOptions().then( () =>
 {
     addOverlay("section-my-pr");
     addOverlay("section-review");
-    storage.load( ['repoList', 'organization'] ).then( ( { repoList = [], organization} ) => Promise.all(
-        repoList
-        .map ( repo => `/repos/${organization}/${repo.name}/pulls` )
-        .map ( link => api( link ) )
-    ) )
-    .then( prsByRepo =>
+    storage.load( ['repoList', 'organization'] ).then( ( { repoList = [], organization} ) => {
+      return Promise.all(
+          repoList
+          .map ( repo => `/repos/${organization}/${repo.name}/pulls` )
+          .map ( link => api( link ) )
+      ).then( prsByRepo => ( { prsByRepo, repoList } ) )
+    } )
+    .then( ( { prsByRepo, repoList } ) =>
     {
+
+      const colorMap = repoList.reduce( ( result, current ) => Object.assign(
+        {},
+        result,
+        { [ current.name ] : current.colorIndex }
+      ), {} );
+
         removeOverlay("section-my-pr");
         removeOverlay("section-review");
         let myPRs = [];
@@ -259,7 +277,10 @@ shouldOpenOptions().then( () =>
         const getPrData = pr => (
         {
             title : pr.title,
-            repo  : pr.head.repo.name,
+            repo  : {
+              name  : pr.head.repo.name,
+              color : colorMap[ pr.head.repo.name ]
+            },
             state : pr.state,
             url   : pr.html_url
         } );
@@ -287,8 +308,22 @@ shouldOpenOptions().then( () =>
     } );
 
     addOverlay("section-issues");
-    storage.load( 'organization' ).then( organization => api(`/orgs/${organization}/issues`)
-    .then( issuesList =>
+    Promise.all( [
+      storage.load( 'organization' ),
+      storage.load( 'repoList' )
+    ] )
+    .then( ( [ organization, repoList ] ) => {
+
+      const colorMap = repoList.reduce( ( result, current ) => Object.assign(
+        {},
+        result,
+        { [ current.name ] : current.colorIndex }
+      ), {} );
+
+      return api(`/orgs/${organization}/issues`)
+      .then( issuesList => ( { issuesList, colorMap } ) );
+    } )
+    .then( ( { issuesList, colorMap } ) =>
     {
         removeOverlay("section-issues");
         // document.getElementById('loader-my-issues').classList.add('hidden');
@@ -301,11 +336,22 @@ shouldOpenOptions().then( () =>
             for ( let issue of issuesList )
             {
                 let item = document.createElement('li');
-                item.classList.add('clickable');
-                let text = document.createTextNode(`${issue.repository.name}: ${issue.title}`)
-                item.appendChild(text);
+
+                item.classList.add( 'clickable' );
+                item.setAttribute( 'title', issue.title );
+
+                const repoWrapper = document.createElement( 'div' );
+                repoWrapper.classList.add( 'repo-name-wrapper' );
+                repoWrapper.classList.add( `colors-bg-${colorMap[ issue.repository.name ]}` );
+
+                repoWrapper.appendChild( document.createTextNode( issue.repository.name ) )
+
+                item.classList.add( 'clickable' );
+                let text = document.createTextNode( issue.title )
+                item.appendChild( repoWrapper );
+                item.appendChild( text );
                 addLinkListener( item, issue.html_url );
-                list.appendChild(item);
+                list.appendChild( item );
             }
 
             container.appendChild( list );
@@ -317,7 +363,7 @@ shouldOpenOptions().then( () =>
             placeholder.classList.add( 'text-italic' );
             container.appendChild( placeholder );
         }
-    } ) );
+    } );
 
 
     Promise.all([

@@ -226,12 +226,14 @@ ul.popup-items-list
     margin  : 0;
 }
 
-ul.popup-items-list li
-{
-    list-style    : none;
-    border-left   : 3px solid #bebebe;
-    padding-left  : 8px;
-    margin-bottom : 4px;
+ul.popup-items-list li {
+    list-style       : none;
+    margin-bottom    : 4px;
+    text-overflow    : ellipsis;
+    white-space      : nowrap;
+    overflow         : hidden;
+    background-color : #ededed;
+    padding          : 2px;
 }
 
 ul.options-items-list
@@ -286,3 +288,23 @@ ul.options-items-list
   padding-bottom: inherit;
   border-bottom: none;
 }
+
+.repo-name-wrapper {
+  display: inline-block;
+  padding: 2px 3px;
+  color: #eee;
+  margin-right: 4px;
+  text-align: center;
+  width: 20%;
+}
+
+.colors-bg-0 { background-color:  #297373; }
+.colors-bg-1 { background-color:  #FF8552; }
+.colors-bg-2 { background-color:  #FB4D3D; }
+.colors-bg-3 { background-color:  #03CEA4; }
+.colors-bg-4 { background-color:  #345995; }
+.colors-bg-5 { background-color:  #26C485; }
+.colors-bg-6 { background-color:  #007090; }
+.colors-bg-7 { background-color:  #D36135; }
+.colors-bg-8 { background-color:  #FF8552; }
+.colors-bg-undefined { background-color:  #555; }

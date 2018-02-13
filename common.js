@@ -93,3 +93,38 @@ const addOverlay = id => {
 const removeOverlay = id => {
     document.getElementById( id ).classList.remove('loading-overlay');
 }
+
+class Colors {
+  constructor() {
+    this.colorsList = [
+      '#345995',
+      '#FB4D3D',
+      '#03CEA4',
+      '#345995',
+      '#26C485',
+      '#007090',
+      '#D36135',
+      '#FF8552',
+      '#297373'
+    ];
+    this.index = 0;
+  }
+
+  getColor( index ) {
+    return this.colorsList[ index ];
+  }
+
+  setIndex( index ) {
+
+  }
+
+  getColorIndex() {
+    const index = this.index;
+
+    if ( ++this.index === this.colorsList.length ) {
+      this.index = 0;
+    }
+
+    return index;
+  }
+}
